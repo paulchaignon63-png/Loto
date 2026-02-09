@@ -63,7 +63,10 @@ export function detectPatterns(combo) {
     patterns.push({
       type: 'consecutive',
       severity: consecutive >= 4 ? 'high' : 'medium',
-      message: `${consecutive + 1} numéros consécutifs détectés`
+      message: `${consecutive + 1} numéros consécutifs détectés`,
+      advice: consecutive >= 4 
+        ? '⚠️ Très commun : beaucoup de joueurs choisissent des suites (ex: 1-2-3-4-5)'
+        : '💡 Pattern assez fréquent, souvent choisi par les joueurs'
     });
   }
 
@@ -74,14 +77,16 @@ export function detectPatterns(combo) {
     patterns.push({
       type: 'all_even',
       severity: 'medium',
-      message: 'Tous les numéros sont pairs'
+      message: 'Tous les numéros sont pairs',
+      advice: '💡 Pattern fréquent : mélanger pairs et impairs est plus équilibré'
     });
   }
   if (allOdd) {
     patterns.push({
       type: 'all_odd',
       severity: 'medium',
-      message: 'Tous les numéros sont impairs'
+      message: 'Tous les numéros sont impairs',
+      advice: '💡 Pattern fréquent : mélanger pairs et impairs est plus équilibré'
     });
   }
 
@@ -92,7 +97,8 @@ export function detectPatterns(combo) {
     patterns.push({
       type: 'same_decade',
       severity: 'medium',
-      message: `${5 - uniqueTens.size + 1} numéros dans la même dizaine`
+      message: `${5 - uniqueTens.size + 1} numéros dans la même dizaine`,
+      advice: '💡 Répartir les numéros sur toute la grille (1-50) est plus équilibré'
     });
   }
 
@@ -101,7 +107,8 @@ export function detectPatterns(combo) {
     patterns.push({
       type: 'dates',
       severity: 'low',
-      message: 'Tous les numéros sont ≤ 31 (dates)'
+      message: 'Tous les numéros sont ≤ 31 (dates)',
+      advice: '💡 Beaucoup de joueurs choisissent des dates (anniversaires, etc.)'
     });
   }
 
@@ -111,14 +118,16 @@ export function detectPatterns(combo) {
     patterns.push({
       type: 'low_sum',
       severity: 'medium',
-      message: `Somme très faible (${sum})`
+      message: `Somme très faible (${sum})`,
+      advice: '💡 Les combos avec des petits numéros sont souvent choisies'
     });
   }
   if (sum > 200) {
     patterns.push({
       type: 'high_sum',
       severity: 'medium',
-      message: `Somme très élevée (${sum})`
+      message: `Somme très élevée (${sum})`,
+      advice: '💡 Les combos avec des grands numéros sont moins fréquentes'
     });
   }
 
@@ -128,7 +137,8 @@ export function detectPatterns(combo) {
     patterns.push({
       type: 'grouped',
       severity: 'medium',
-      message: `Numéros très groupés (écart: ${spread})`
+      message: `Numéros très groupés (écart: ${spread})`,
+      advice: '💡 Répartir les numéros sur toute la grille évite ce pattern commun'
     });
   }
 

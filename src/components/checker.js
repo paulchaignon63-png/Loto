@@ -4,6 +4,7 @@
 
 import { findSimilarCombos, detectPatterns, calculateBanalityScore } from '../utils/analyzer.js';
 import { storage } from '../utils/storage.js';
+import { renderComboAnalysis } from './analysisDisplay.js';
 
 /**
  * Vérifie une combinaison et affiche les résultats
@@ -56,8 +57,10 @@ export function checkCombo(combo) {
 
 /**
  * Formate les résultats pour l'affichage
+ * @param {Object} results - Résultat de checkCombo()
+ * @param {Object} combo - { numbers, stars } pour l'analyse détaillée
  */
-export function formatCheckResults(results) {
+export function formatCheckResults(results, combo) {
   if (results.error) {
     return `<div class="status-message error">${results.error}</div>`;
   }
@@ -82,14 +85,25 @@ export function formatCheckResults(results) {
   if (results.fourMatch.length > 0) {
     html += '<div class="result-item">';
     html += `<h3>🎯 ${results.fourMatch.length} fois avec 4 numéros corrects</h3>`;
-    if (results.fourMatch.length <= 10) {
+    const numFrequency = {};
+    results.fourMatch.forEach(match => {
+      match.matchingNumbers.forEach(num => {
+        numFrequency[num] = (numFrequency[num] || 0) + 1;
+      });
+    });
+    const mostCommon = Object.entries(numFrequency)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 4)
+      .map(([num]) => num);
+    html += `<p>Numéros en commun les plus fréquents : <strong>${mostCommon.join(', ')}</strong></p>`;
+    if (results.fourMatch.length <= 5) {
+      html += '<details style="margin-top: 10px;"><summary style="cursor: pointer; color: var(--accent-blue);">Voir les détails</summary>';
       results.fourMatch.forEach(match => {
-        html += `<p><strong>${match.date}:</strong> ${match.matchingNumbers.join(', ')}`;
-        if (match.matchingStars > 0) {
-          html += ` + ${match.matchingStars} étoile(s)`;
-        }
+        html += `<p style="margin: 5px 0;"><strong>${match.date}:</strong> ${match.matchingNumbers.join(', ')}`;
+        if (match.matchingStars > 0) html += ` + ${match.matchingStars} étoile(s)`;
         html += `</p>`;
       });
+      html += '</details>';
     }
     html += '</div>';
   }
@@ -98,31 +112,23 @@ export function formatCheckResults(results) {
   if (results.threeMatch.length > 0) {
     html += '<div class="result-item">';
     html += `<h3>📊 ${results.threeMatch.length} fois avec 3 numéros corrects</h3>`;
-    html += '</div>';
-  }
-
-  // Patterns détectés
-  if (results.patterns.length > 0) {
-    html += '<div class="result-item">';
-    html += '<h3>🔍 Patterns détectés:</h3>';
-    results.patterns.forEach(pattern => {
-      const severityEmoji = pattern.severity === 'high' ? '🔴' : pattern.severity === 'medium' ? '🟡' : '🟢';
-      html += `<p>${severityEmoji} ${pattern.message}</p>`;
+    const numFrequency = {};
+    results.threeMatch.forEach(match => {
+      match.matchingNumbers.forEach(num => {
+        numFrequency[num] = (numFrequency[num] || 0) + 1;
+      });
     });
+    const mostCommon = Object.entries(numFrequency)
+      .sort((a, b) => b[1] - a[1])
+      .slice(0, 3)
+      .map(([num, count]) => `${num} (${count}x)`)
+      .join(', ');
+    html += `<p>Numéros en commun les plus fréquents : <strong>${mostCommon}</strong></p>`;
     html += '</div>';
   }
 
-  // Score de banalité
-  html += '<div class="result-item">';
-  html += `<h3>📈 Score de banalité: ${results.banalityScore}/100</h3>`;
-  if (results.banalityScore < 20) {
-    html += '<p>✅ Combinaison originale !</p>';
-  } else if (results.banalityScore < 50) {
-    html += '<p>⚖️ Combinaison équilibrée</p>';
-  } else {
-    html += '<p>⚠️ Combinaison assez commune</p>';
-  }
-  html += '</div>';
+  // Bloc Analyse de combinaison (design refondu)
+  html += renderComboAnalysis(combo, results.banalityScore);
 
   html += '</div>';
   return html;

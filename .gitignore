@@ -12,6 +12,10 @@ dist
 dist-ssr
 *.local
 
+# Données CSV (optionnel - décommentez si vous ne voulez pas les commiter)
+# data/
+# *.zip
+
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

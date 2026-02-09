@@ -188,6 +188,41 @@ body {
   box-shadow: 6px 6px 12px var(--shadow-dark), -6px -6px 12px var(--shadow-light);
 }
 
+.file-name {
+  margin-top: 15px;
+  padding: 10px;
+  background: var(--bg-primary);
+  border-radius: 8px;
+  color: var(--text-secondary);
+  font-size: 0.9rem;
+  display: none;
+}
+
+details summary {
+  user-select: none;
+}
+
+details summary::-webkit-details-marker {
+  display: none;
+}
+
+details[open] summary {
+  margin-bottom: 10px;
+}
+
+details a {
+  color: var(--accent-blue);
+  text-decoration: underline;
+}
+
+details a:hover {
+  color: var(--accent-purple);
+}
+
+details ul {
+  margin: 8px 0;
+}
+
 /* Forms */
 .combo-form {
   margin: 20px 0;
@@ -284,6 +319,11 @@ body {
   padding: 15px;
   border-radius: 12px;
   font-weight: 500;
+  min-height: 20px;
+}
+
+.status-message:empty {
+  display: none !important;
 }
 
 .status-message.success {
@@ -327,6 +367,290 @@ body {
   border-left: 4px solid var(--accent-blue);
   background: var(--bg-secondary);
   border-radius: 8px;
+}
+
+.result-item.quality-explanation {
+  border-left-color: var(--success);
+  background: linear-gradient(135deg, rgba(72, 187, 120, 0.08), transparent);
+}
+
+.quality-text {
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+/* ===== Analyse de combinaison (refonte) ===== */
+.combo-analysis-card {
+  margin-top: 20px;
+  padding: 24px;
+  background: var(--bg-primary);
+  border-radius: 16px;
+  box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+}
+
+.combo-analysis-title {
+  margin: 0 0 20px 0;
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--accent-blue);
+}
+
+.combo-analysis-metrics {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.analysis-metric {
+  padding: 14px 16px;
+  background: var(--bg-secondary);
+  border-radius: 12px;
+  box-shadow: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light);
+}
+
+.metric-header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.metric-icon {
+  font-size: 1.2rem;
+}
+
+.metric-label {
+  flex: 0 0 auto;
+}
+
+.metric-value {
+  color: var(--accent-blue);
+  font-weight: 700;
+}
+
+.metric-detail {
+  margin: 4px 0 0 0;
+  padding-left: 20px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.45;
+}
+
+.metric-checklist {
+  margin: 10px 0 0 0;
+  padding-left: 24px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+  list-style: none;
+}
+
+.metric-checklist li {
+  position: relative;
+}
+
+.status-ok { color: var(--success); }
+.status-warn { color: var(--warning); }
+.status-bad { color: var(--error); }
+
+.combo-analysis-divider {
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--accent-blue), transparent);
+  margin: 24px 0;
+  opacity: 0.5;
+}
+
+.combo-analysis-banality {
+  padding: 16px 0 0 0;
+}
+
+.banality-title {
+  margin: 0 0 12px 0;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--text-primary);
+}
+
+.banality-bar-wrap {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.banality-bar {
+  flex: 1;
+  height: 20px;
+  background: var(--bg-secondary);
+  border-radius: 10px;
+  overflow: hidden;
+  box-shadow: inset 2px 2px 4px var(--shadow-dark);
+}
+
+.banality-bar-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.4s ease;
+}
+
+.banality-bar-fill--low {
+  background: linear-gradient(90deg, var(--success), #38a169);
+}
+
+.banality-bar-fill--mid {
+  background: linear-gradient(90deg, var(--warning), #dd6b20);
+}
+
+.banality-bar-fill--high {
+  background: linear-gradient(90deg, var(--error), #c53030);
+}
+
+.banality-bar-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  min-width: 48px;
+}
+
+.banality-label {
+  margin: 0 0 12px 0;
+  font-size: 1rem;
+  color: var(--text-primary);
+}
+
+.banality-impact {
+  margin: 0 0 16px 0;
+  padding: 12px;
+  background: var(--bg-secondary);
+  border-radius: 8px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+
+.banality-scale-title {
+  margin: 0 0 8px 0;
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.banality-scale-list {
+  margin: 0;
+  padding-left: 20px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  line-height: 1.8;
+}
+
+.banality-scale-list li {
+  margin: 4px 0;
+}
+
+.scale-dot { margin-right: 4px; }
+
+@media (max-width: 600px) {
+  .combo-analysis-card { padding: 16px; }
+  .metric-header { flex-direction: column; align-items: flex-start; }
+}
+
+/* ===== Générateur : choix du mode ===== */
+.generator-intro {
+  margin-bottom: 16px;
+}
+
+.generator-modes {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-bottom: 24px;
+}
+
+.generator-mode-option {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 16px 18px;
+  background: var(--bg-primary);
+  border-radius: 12px;
+  box-shadow: inset 2px 2px 4px var(--shadow-dark), inset -2px -2px 4px var(--shadow-light);
+  border: 2px solid transparent;
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.generator-mode-option:hover {
+  border-color: var(--accent-blue);
+  opacity: 0.95;
+}
+
+.generator-mode-option:has(input:checked) {
+  border-color: var(--accent-blue);
+  box-shadow: 4px 4px 12px var(--shadow-dark), -2px -2px 8px var(--shadow-light);
+}
+
+.generator-mode-recommended:has(input:checked) {
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.08), rgba(118, 75, 162, 0.06));
+}
+
+.generator-mode-option input {
+  margin-right: 10px;
+  accent-color: var(--accent-blue);
+}
+
+.mode-title {
+  font-weight: 700;
+  font-size: 1.05rem;
+  color: var(--text-primary);
+}
+
+.mode-desc {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+}
+
+.mode-ok {
+  font-size: 0.9rem;
+  color: var(--success);
+  margin-top: 2px;
+}
+
+.mode-warn {
+  font-size: 0.9rem;
+  color: var(--warning);
+  margin-top: 2px;
+}
+
+.btn-generate {
+  margin-bottom: 20px;
+}
+
+.btn-generate.generating {
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.combo-loading {
+  padding: 24px;
+  text-align: center;
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  animation: pulse 0.8s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
+}
+
+@media (max-width: 600px) {
+  .generator-mode-option { padding: 12px 14px; }
 }
 
 /* Generated Combo */

@@ -1,8 +1,9 @@
 /**
  * Générateur intelligent de combinaisons EuroMillions
+ * 3 modes : aléatoire pur, optimisé (recommandé), extrême
  */
 
-import { detectPatterns, calculateBanalityScore, calculateFrequencies } from './analyzer.js';
+import { detectPatterns, calculateBanalityScore } from './analyzer.js';
 
 /**
  * Génère un nombre aléatoire entre min et max (inclus)
@@ -12,26 +13,20 @@ function randomInt(min, max) {
 }
 
 /**
- * Génère une combinaison aléatoire simple
+ * Génère une combinaison aléatoire simple (mode aléatoire pur)
+ * Aucun filtre, Math.random() uniquement.
  */
-function generateRandomCombo() {
+export function generateRandomCombo() {
   const numbers = [];
   const stars = [];
 
-  // Générer 5 numéros uniques entre 1 et 50
   while (numbers.length < 5) {
     const num = randomInt(1, 50);
-    if (!numbers.includes(num)) {
-      numbers.push(num);
-    }
+    if (!numbers.includes(num)) numbers.push(num);
   }
-
-  // Générer 2 étoiles uniques entre 1 et 12
   while (stars.length < 2) {
     const star = randomInt(1, 12);
-    if (!stars.includes(star)) {
-      stars.push(star);
-    }
+    if (!stars.includes(star)) stars.push(star);
   }
 
   return {
@@ -40,109 +35,179 @@ function generateRandomCombo() {
   };
 }
 
-/**
- * Vérifie si une combinaison respecte les critères d'optimisation
- */
-function isOptimized(combo, draws) {
+/** Retourne true si la combo a une suite consécutive (3+ numéros) */
+function hasConsecutive(combo) {
+  const numbers = [...combo.numbers].sort((a, b) => a - b);
+  let consecutive = 0;
+  for (let i = 0; i < numbers.length - 1; i++) {
+    if (numbers[i + 1] === numbers[i] + 1) consecutive++;
+    else consecutive = 0;
+    if (consecutive >= 2) return true; // 3 numéros consécutifs
+  }
+  return false;
+}
+
+/** Retourne true si tous les numéros sont dans une seule dizaine (ex: tous 10-19) */
+function isSameDecade(combo) {
+  const tens = combo.numbers.map(n => Math.floor((n - 1) / 10));
+  return new Set(tens).size <= 1;
+}
+
+/** Critères pour le mode optimisé : rejette les patterns communs + somme + score */
+function passesOptimizedFilters(combo, draws) {
   const patterns = detectPatterns(combo);
-  
-  // Rejeter les patterns trop évidents
-  const highSeverityPatterns = patterns.filter(p => p.severity === 'high');
-  if (highSeverityPatterns.length > 0) {
-    return false;
-  }
+  const highSeverity = patterns.some(p => p.severity === 'high');
+  if (highSeverity) return false;
 
-  // Vérifier la somme (idéalement entre 100 et 200)
   const sum = combo.numbers.reduce((a, b) => a + b, 0);
-  if (sum < 80 || sum > 220) {
-    return false;
-  }
+  if (sum < 80 || sum > 220) return false;
 
-  // Vérifier l'écart (idéalement entre 20 et 45)
   const sorted = [...combo.numbers].sort((a, b) => a - b);
   const spread = sorted[4] - sorted[0];
-  if (spread < 15 || spread > 48) {
-    return false;
-  }
+  if (spread < 15 || spread > 48) return false;
 
-  // Vérifier qu'on n'a pas tous pairs ou tous impairs
   const allEven = combo.numbers.every(n => n % 2 === 0);
   const allOdd = combo.numbers.every(n => n % 2 === 1);
-  if (allEven || allOdd) {
-    return false;
+  if (allEven || allOdd) return false;
+
+  if (hasConsecutive(combo)) return false;
+  if (isSameDecade(combo)) return false;
+  if (combo.numbers.every(n => n <= 31)) return false;
+
+  if (draws.length > 0) {
+    const score = calculateBanalityScore(combo, draws);
+    if (score > 50) return false;
   }
 
   return true;
 }
 
+/** Critères pour le mode extrême : tout du mode optimisé + contraintes supplémentaires */
+function passesExtremeFilters(combo, draws) {
+  if (!passesOptimizedFilters(combo, draws)) return false;
+
+  const evenCount = combo.numbers.filter(n => n % 2 === 0).length;
+  const oddCount = 5 - evenCount;
+  if (evenCount < 2 || oddCount < 2) return false; // force 2-3 ou 3-2
+
+  const tens = combo.numbers.map(n => Math.floor((n - 1) / 10));
+  if (new Set(tens).size < 3) return false; // au moins 3 dizaines
+
+  const multi5 = combo.numbers.filter(n => n % 5 === 0).length;
+  if (multi5 > 2) return false; // évite trop de multiples de 5
+
+  if (combo.numbers.includes(7) || combo.numbers.includes(13)) return false; // évite 7 et 13
+
+  if (draws.length > 0) {
+    const score = calculateBanalityScore(combo, draws);
+    if (score >= 20) return false; // vise score < 20
+  }
+
+  return true;
+}
+
+const MAX_ATTEMPTS_OPTIMIZED = 100;
+const MAX_ATTEMPTS_EXTREME = 200;
+
 /**
- * Génère une combinaison optimisée qui évite les patterns populaires
+ * Mode aléatoire pur : aucune optimisation, retour immédiat.
  */
-export function generateOptimizedCombo(draws = []) {
-  const maxAttempts = 1000;
-  let attempts = 0;
+export function generatePureRandom(draws = []) {
+  const combo = generateRandomCombo();
+  const banalityScore = draws.length > 0 ? calculateBanalityScore(combo, draws) : 50;
+  return { combo, banalityScore };
+}
+
+/**
+ * Mode optimisé : filtre les patterns communs, score ≤ 50, max 100 tentatives.
+ */
+export function generateOptimized(draws = []) {
   let bestCombo = null;
-  let bestScore = 100; // On cherche le score le plus bas
+  let bestScore = 100;
 
-  while (attempts < maxAttempts) {
+  for (let i = 0; i < MAX_ATTEMPTS_OPTIMIZED; i++) {
     const combo = generateRandomCombo();
-    
-    // Si on a des données historiques, utiliser l'analyse
-    if (draws.length > 0) {
-      const score = calculateBanalityScore(combo, draws);
-      
-      // Si le score est acceptable et la combo est optimisée
-      if (score < bestScore && isOptimized(combo, draws)) {
-        bestCombo = combo;
-        bestScore = score;
-        
-        // Si on trouve une très bonne combo (score < 20), on s'arrête
-        if (score < 20) {
-          break;
-        }
-      }
-    } else {
-      // Sans données, juste vérifier l'optimisation basique
-      if (isOptimized(combo, draws)) {
-        bestCombo = combo;
-        break;
-      }
+    if (!passesOptimizedFilters(combo, draws)) continue;
+
+    const score = draws.length > 0 ? calculateBanalityScore(combo, draws) : 50;
+    if (score < bestScore) {
+      bestScore = score;
+      bestCombo = combo;
     }
-
-    attempts++;
   }
 
-  // Si on n'a rien trouvé d'optimal, retourner une combo aléatoire quand même
-  if (!bestCombo) {
-    bestCombo = generateRandomCombo();
-  }
+  if (!bestCombo) bestCombo = generateRandomCombo();
+  if (bestCombo && draws.length === 0) bestScore = 50;
+  if (bestCombo && draws.length > 0 && bestScore === 100) bestScore = calculateBanalityScore(bestCombo, draws);
 
   return {
-    combo: bestCombo,
-    attempts,
-    optimized: attempts < maxAttempts
+    combo: bestCombo || generateRandomCombo(),
+    banalityScore: bestScore
   };
 }
 
 /**
- * Génère plusieurs combinaisons et retourne la meilleure
+ * Mode extrême : contraintes renforcées, score < 20, max 200 tentatives.
  */
-export function generateBestCombo(draws = [], count = 10) {
+export function generateExtreme(draws = []) {
   let bestCombo = null;
   let bestScore = 100;
 
-  for (let i = 0; i < count; i++) {
-    const result = generateOptimizedCombo(draws);
-    const score = draws.length > 0 
-      ? calculateBanalityScore(result.combo, draws)
-      : 50; // Score neutre si pas de données
+  for (let i = 0; i < MAX_ATTEMPTS_EXTREME; i++) {
+    const combo = generateRandomCombo();
+    if (!passesExtremeFilters(combo, draws)) continue;
 
+    const score = draws.length > 0 ? calculateBanalityScore(combo, draws) : 50;
     if (score < bestScore) {
       bestScore = score;
-      bestCombo = result.combo;
+      bestCombo = combo;
     }
   }
 
+  if (!bestCombo) {
+    bestCombo = generateRandomCombo();
+    bestScore = draws.length > 0 ? calculateBanalityScore(bestCombo, draws) : 50;
+  }
+
+  return {
+    combo: bestCombo,
+    banalityScore: bestScore
+  };
+}
+
+/**
+ * Génère une combo selon le mode choisi.
+ * @param {string} mode - 'random' | 'optimized' | 'extreme'
+ * @param {Array} draws - tirages historiques
+ */
+export function generateByMode(mode, draws = []) {
+  switch (mode) {
+    case 'random':
+      return generatePureRandom(draws);
+    case 'extreme':
+      return generateExtreme(draws);
+    case 'optimized':
+    default:
+      return generateOptimized(draws);
+  }
+}
+
+// Rétrocompatibilité : ancienne API
+export function generateOptimizedCombo(draws = []) {
+  const result = generateOptimized(draws);
+  return { combo: result.combo, attempts: 0, optimized: true };
+}
+
+export function generateBestCombo(draws = [], count = 10) {
+  let bestCombo = null;
+  let bestScore = 100;
+  for (let i = 0; i < count; i++) {
+    const result = generateOptimized(draws);
+    if (result.banalityScore < bestScore) {
+      bestScore = result.banalityScore;
+      bestCombo = result.combo;
+    }
+  }
   return {
     combo: bestCombo || generateRandomCombo(),
     banalityScore: bestScore

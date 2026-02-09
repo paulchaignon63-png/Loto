@@ -3,7 +3,7 @@
  */
 
 import { storage } from '../utils/storage.js';
-import { findSimilarCombos, formatCheckResults } from './checker.js';
+import { findSimilarCombos } from '../utils/analyzer.js';
 
 /**
  * Affiche toutes les combos sauvegardées
