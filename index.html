@@ -1,0 +1,129 @@
+<!doctype html>
+<html lang="fr">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>EuroMillions Analyzer</title>
+  </head>
+  <body>
+    <div id="app">
+      <header class="header">
+        <h1>🎰 EuroMillions Analyzer</h1>
+        <button id="darkModeToggle" class="dark-mode-toggle" aria-label="Basculer le mode sombre">
+          🌙
+        </button>
+      </header>
+
+      <nav class="tabs">
+        <button class="tab-btn active" data-tab="import">📥 Import</button>
+        <button class="tab-btn" data-tab="checker">✅ Vérifier</button>
+        <button class="tab-btn" data-tab="stats">📊 Statistiques</button>
+        <button class="tab-btn" data-tab="generator">🎲 Générateur</button>
+        <button class="tab-btn" data-tab="history">📝 Historique</button>
+      </nav>
+
+      <main class="main-content">
+        <!-- Section Import -->
+        <section id="import-tab" class="tab-content active">
+          <div class="card">
+            <h2>Import des données historiques</h2>
+            <p class="info-text">
+              Importez un fichier CSV avec l'historique des tirages EuroMillions.<br>
+              Format attendu : date, num1, num2, num3, num4, num5, star1, star2
+            </p>
+            <div class="file-upload-area">
+              <input type="file" id="csvFileInput" accept=".csv,.txt" />
+              <label for="csvFileInput" class="file-label">
+                📁 Choisir un fichier CSV
+              </label>
+            </div>
+            <div id="importStatus" class="status-message"></div>
+            <div id="dataInfo" class="data-info"></div>
+          </div>
+        </section>
+
+        <!-- Section Vérification -->
+        <section id="checker-tab" class="tab-content">
+          <div class="card">
+            <h2>Vérifier ma combinaison</h2>
+            <form id="checkerForm" class="combo-form">
+              <div class="numbers-group">
+                <label>Numéros (1-50)</label>
+                <div class="number-inputs">
+                  <input type="number" min="1" max="50" class="number-input" data-index="0" required />
+                  <input type="number" min="1" max="50" class="number-input" data-index="1" required />
+                  <input type="number" min="1" max="50" class="number-input" data-index="2" required />
+                  <input type="number" min="1" max="50" class="number-input" data-index="3" required />
+                  <input type="number" min="1" max="50" class="number-input" data-index="4" required />
+                </div>
+              </div>
+              <div class="stars-group">
+                <label>Étoiles (1-12)</label>
+                <div class="star-inputs">
+                  <input type="number" min="1" max="12" class="star-input" data-index="0" required />
+                  <input type="number" min="1" max="12" class="star-input" data-index="1" required />
+                </div>
+              </div>
+              <button type="submit" class="btn-primary">Vérifier</button>
+            </form>
+            <div id="checkerResults" class="results"></div>
+          </div>
+        </section>
+
+        <!-- Section Statistiques -->
+        <section id="stats-tab" class="tab-content">
+          <div class="card">
+            <h2>Analyses statistiques</h2>
+            <div id="statsContent" class="stats-content">
+              <p class="info-text">Importez d'abord des données pour voir les statistiques.</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Section Générateur -->
+        <section id="generator-tab" class="tab-content">
+          <div class="card">
+            <h2>Générateur intelligent</h2>
+            <p class="info-text">
+              Générez une combinaison optimisée qui évite les patterns populaires.
+            </p>
+            <button id="generateBtn" class="btn-primary">🎲 Générer une combo</button>
+            <div id="generatedCombo" class="generated-combo"></div>
+            <div id="generatorResults" class="results"></div>
+          </div>
+        </section>
+
+        <!-- Section Historique -->
+        <section id="history-tab" class="tab-content">
+          <div class="card">
+            <h2>Mon historique personnel</h2>
+            <form id="saveComboForm" class="combo-form">
+              <div class="numbers-group">
+                <label>Numéros (1-50)</label>
+                <div class="number-inputs">
+                  <input type="number" min="1" max="50" class="number-input" data-index="0" required />
+                  <input type="number" min="1" max="50" class="number-input" data-index="1" required />
+                  <input type="number" min="1" max="50" class="number-input" data-index="2" required />
+                  <input type="number" min="1" max="50" class="number-input" data-index="3" required />
+                  <input type="number" min="1" max="50" class="number-input" data-index="4" required />
+                </div>
+              </div>
+              <div class="stars-group">
+                <label>Étoiles (1-12)</label>
+                <div class="star-inputs">
+                  <input type="number" min="1" max="12" class="star-input" data-index="0" required />
+                  <input type="number" min="1" max="12" class="star-input" data-index="1" required />
+                </div>
+              </div>
+              <button type="submit" class="btn-primary">💾 Sauvegarder cette combo</button>
+            </form>
+            <div id="savedCombos" class="saved-combos"></div>
+            <button id="exportBtn" class="btn-secondary">📤 Exporter en CSV</button>
+          </div>
+        </section>
+      </main>
+    </div>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
