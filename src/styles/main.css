@@ -809,36 +809,363 @@ details ul {
   box-shadow: 4px 4px 8px var(--shadow-dark), -4px -4px 8px var(--shadow-light);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .header h1 {
-    font-size: 1.8rem;
+/* ========== MOBILE-FIRST : compact et lisible ========== */
+.info-text-short {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  body {
+    padding: 10px 12px;
+    padding-bottom: max(12px, env(safe-area-inset-bottom));
   }
 
+  .header {
+    margin-bottom: 12px;
+    padding: 12px 14px;
+    border-radius: 14px;
+  }
+
+  .header h1 {
+    font-size: 1.2rem;
+  }
+
+  .dark-mode-toggle {
+    width: 40px;
+    height: 40px;
+    font-size: 1.2rem;
+  }
+
+  /* Onglets : défilement horizontal (pas de colonne) */
   .tabs {
-    flex-direction: column;
+    display: flex;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    gap: 6px;
+    margin-bottom: 14px;
+    padding-bottom: 4px;
+    justify-content: flex-start;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+  }
+  .tabs::-webkit-scrollbar {
+    display: none;
   }
 
   .tab-btn {
-    width: 100%;
+    flex: 0 0 auto;
+    padding: 8px 14px;
+    font-size: 0.85rem;
+    white-space: nowrap;
+    border-radius: 10px;
+  }
+
+  .main-content {
+    min-height: 0;
+  }
+
+  .card {
+    padding: 14px 16px;
+    margin-bottom: 12px;
+    border-radius: 14px;
+  }
+
+  .card h2 {
+    font-size: 1.15rem;
+    margin-bottom: 10px;
+  }
+
+  .info-text-long {
+    display: none;
+  }
+  .info-text-short {
+    display: block;
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    line-height: 1.35;
+    color: var(--text-secondary);
+  }
+
+  .info-text {
+    font-size: 0.9rem;
+    margin-bottom: 10px;
+    line-height: 1.4;
+  }
+
+  details {
+    margin: 8px 0 !important;
+    padding: 8px 10px !important;
+    font-size: 0.9rem;
+  }
+  details summary {
+    font-size: 0.9rem;
+  }
+  details div {
+    font-size: 0.85rem;
+    margin-top: 8px !important;
+  }
+
+  .file-upload-area {
+    margin: 10px 0;
+  }
+  .file-label {
+    padding: 10px 18px;
+    font-size: 0.9rem;
+    border-radius: 10px;
+  }
+  .file-name {
+    margin-top: 8px;
+    padding: 8px;
+    font-size: 0.85rem;
+  }
+
+  .combo-form {
+    margin: 12px 0;
+  }
+  .numbers-group,
+  .stars-group {
+    margin-bottom: 12px;
+  }
+  .numbers-group label,
+  .stars-group label {
+    margin-bottom: 6px;
+    font-size: 0.9rem;
   }
 
   .number-inputs,
   .star-inputs {
+    gap: 6px;
     justify-content: center;
   }
-
   .number-input,
   .star-input {
-    width: 60px;
-    height: 60px;
-    font-size: 1.2rem;
+    width: 48px;
+    height: 48px;
+    min-width: 48px;
+    min-height: 48px;
+    font-size: 1rem; /* 16px évite le zoom auto sur iOS */
+    border-radius: 10px;
+  }
+
+  .btn-primary,
+  .btn-secondary {
+    padding: 10px 18px;
+    font-size: 0.9rem;
+    margin: 8px 4px 4px;
+    border-radius: 10px;
+  }
+  .btn-generate {
+    margin-bottom: 12px;
+  }
+
+  .status-message {
+    margin: 10px 0;
+    padding: 10px 12px;
+    font-size: 0.9rem;
+    min-height: auto;
+  }
+  .data-info {
+    margin-top: 12px;
+    padding: 10px 12px;
+    font-size: 0.9rem;
+    border-radius: 10px;
+  }
+  .data-info p {
+    margin: 4px 0;
+  }
+
+  .results {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: 10px;
+  }
+  .result-item {
+    margin: 8px 0;
+    padding: 8px 10px;
+    font-size: 0.9rem;
+  }
+
+  /* Analyse combo */
+  .combo-analysis-card {
+    margin-top: 12px;
+    padding: 12px 14px;
+    border-radius: 12px;
+  }
+  .combo-analysis-title {
+    font-size: 1.05rem;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+  }
+  .combo-analysis-metrics {
+    gap: 10px;
+  }
+  .analysis-metric {
+    padding: 10px 12px;
+    border-radius: 10px;
+  }
+  .metric-header {
+    margin-bottom: 4px;
+    gap: 6px;
+    font-size: 0.9rem;
+  }
+  .metric-detail {
+    font-size: 0.8rem;
+    margin-top: 2px;
+    padding-left: 0;
+  }
+  .metric-checklist {
+    font-size: 0.8rem;
+    padding-left: 16px;
+    margin-top: 6px;
+  }
+  .combo-analysis-divider {
+    margin: 14px 0;
+  }
+  .banality-title {
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+  .banality-bar-wrap {
+    margin-bottom: 8px;
+  }
+  .banality-bar {
+    height: 16px;
+  }
+  .banality-impact,
+  .banality-label {
+    font-size: 0.85rem;
+    margin-bottom: 8px;
+  }
+  .banality-scale-list {
+    font-size: 0.85rem;
+  }
+
+  /* Générateur */
+  .generator-intro {
+    margin-bottom: 10px;
+    font-size: 0.9rem;
+  }
+  .generator-modes {
+    gap: 8px;
+    margin-bottom: 14px;
+  }
+  .generator-mode-option {
+    padding: 10px 12px;
+    gap: 4px;
+    border-radius: 10px;
+  }
+  .mode-title {
+    font-size: 0.95rem;
+  }
+  .mode-desc,
+  .mode-ok,
+  .mode-warn {
+    font-size: 0.82rem;
+  }
+
+  .generated-combo {
+    margin: 12px 0;
+    padding: 12px 14px;
+    gap: 8px;
+    border-radius: 10px;
+  }
+  .combo-number,
+  .combo-star {
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
+    font-size: 1rem;
+  }
+
+  .combo-loading {
+    padding: 14px;
+    font-size: 0.95rem;
+  }
+
+  /* Historique */
+  .saved-combos {
+    margin: 12px 0;
+  }
+  .saved-combo-item {
+    padding: 10px 12px;
+    margin: 8px 0;
+    border-radius: 10px;
+    gap: 8px;
+  }
+  .combo-display {
+    gap: 6px;
+  }
+  .combo-date {
+    font-size: 0.85rem;
+  }
+  .delete-btn {
+    padding: 6px 12px;
+    font-size: 0.85rem;
+    border-radius: 8px;
+  }
+
+  /* Stats */
+  .stats-content {
+    margin-top: 12px;
+  }
+  .stat-card {
+    padding: 12px 14px;
+    margin: 10px 0;
+    border-radius: 10px;
+  }
+  .stat-title {
+    font-size: 1rem;
+    margin-bottom: 8px;
+  }
+  .stat-card p {
+    font-size: 0.9rem;
+    margin: 4px 0;
+  }
+  .frequency-chart {
+    gap: 6px;
+    margin-top: 8px;
+  }
+  .freq-item {
+    padding: 6px 10px;
+    font-size: 0.85rem;
+    border-radius: 6px;
   }
 
   .grid-visualization {
     grid-template-columns: repeat(5, 1fr);
+    gap: 4px;
+    margin: 12px 0;
+    padding: 12px 14px;
+    border-radius: 10px;
   }
+  .grid-cell {
+    font-size: 0.7rem;
+    border-radius: 4px;
+  }
+}
 
+/* Tablette / petit desktop */
+@media (min-width: 601px) and (max-width: 768px) {
+  .header h1 {
+    font-size: 1.6rem;
+  }
+  .tabs {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .tab-btn {
+    padding: 10px 18px;
+  }
+  .number-input,
+  .star-input {
+    width: 56px;
+    height: 56px;
+    font-size: 1.15rem;
+  }
+  .grid-visualization {
+    grid-template-columns: repeat(5, 1fr);
+  }
   .saved-combo-item {
     flex-direction: column;
     align-items: flex-start;

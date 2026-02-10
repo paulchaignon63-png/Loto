@@ -348,13 +348,14 @@ function updateDataInfo() {
   const draws = storage.getHistory();
   
   if (draws.length > 0) {
-    const dates = draws.map(d => d.date).sort();
-    const firstDate = dates[0];
-    const lastDate = dates[dates.length - 1];
-    
-    // Calculer le nombre d'années couvertes
-    const firstYear = new Date(firstDate.split('/').reverse().join('-')).getFullYear();
-    const lastYear = new Date(lastDate.split('/').reverse().join('-')).getFullYear();
+    // Tri chronologique (pas en chaîne : DD/MM/YYYY trié en string donnerait un mauvais ordre)
+    const parseDate = (d) => new Date(d.split('/').reverse().join('-'));
+    const sorted = draws.slice().sort((a, b) => parseDate(a.date) - parseDate(b.date));
+    const firstDate = sorted[0].date;
+    const lastDate = sorted[sorted.length - 1].date;
+
+    const firstYear = parseDate(firstDate).getFullYear();
+    const lastYear = parseDate(lastDate).getFullYear();
     const yearsCovered = lastYear - firstYear + 1;
     
     infoDiv.innerHTML = `

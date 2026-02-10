@@ -69,6 +69,15 @@ Date: 01/01/2024 - Nums: 5 12 23 34 45 - Stars: 3 8
 5. Sélectionnez votre fichier CSV
 6. Les données seront automatiquement importées et sauvegardées dans votre navigateur
 
+### Mise à jour des données (pas d'API automatique)
+
+**La FDJ ne propose pas d'API publique** pour récupérer les tirages en automatique.
+
+**Recommandation – mise à jour manuelle :**
+- Périodiquement (chaque semaine ou chaque mois), retéléchargez le fichier de la **période la plus récente** sur [fdj.fr/euromillions/historique](https://www.fdj.fr/jeux-de-tirage/euromillions-my-million/historique). Ce ZIP est **mis à jour par la FDJ** avec les nouveaux tirages.
+- Extrayez le CSV et réimportez-le dans l'app. Les nouveaux tirages seront **ajoutés**, les doublons supprimés. Pas besoin de réimporter tout l'historique.
+- Alternative payante : services type [Apify Euromillions Results API](https://apify.com/ayf/euromillions-results) (nécessiterait un petit backend pour appeler l'API).
+
 ## ✨ Fonctionnalités
 
 ### 1. 📥 Import des données
@@ -149,7 +158,32 @@ Pour créer une version de production :
 npm run build
 ```
 
-Les fichiers seront générés dans le dossier `dist/`.
+Les fichiers seront générés dans le dossier `dist/`. Le build génère aussi les icônes PWA (192×192 et 512×512) à partir de `public/vite.svg`.
+
+## 📱 PWA (Progressive Web App)
+
+L’application est une PWA : elle peut être **installée sur l’écran d’accueil** (Android, iOS, desktop) et **fonctionne hors ligne** après une première visite.
+
+- **Manifest** : nom, icônes, thème (généré par `vite-plugin-pwa`).
+- **Service worker** : mise en cache des assets pour le mode hors ligne.
+- **Données** : tout est stocké en local (localStorage), donc aucune requête réseau nécessaire une fois l’app chargée.
+
+## 🌐 Déploiement sur Vercel
+
+1. **Build local** (vérification) :
+   ```bash
+   npm run build
+   ```
+
+2. **Déploiement avec Vercel CLI** :
+   - Installer le CLI : `npm i -g vercel`
+   - À la racine du projet : `vercel`
+   - Première fois : connexion (navigateur), choix du scope, création ou liaison du projet.
+   - À la fin, Vercel affiche une URL du type `https://votre-projet.vercel.app`.
+
+3. **Déploiement continu** (optionnel) : sur [vercel.com](https://vercel.com), “Add New Project” → importer le dépôt Git. Chaque push sur la branche de production (ex. `main`) déclenche un build et met à jour l’URL.
+
+La configuration est dans `vercel.json` (build : `npm run build`, sortie : `dist`). Vercel sert le site en HTTPS, requis pour l’installation PWA.
 
 ## 📄 Licence
 
