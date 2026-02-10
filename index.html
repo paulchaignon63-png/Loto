@@ -72,8 +72,8 @@
               </div>
             </details>
             <div class="file-upload-area">
-              <!-- accept large : mobile propose Parcourir / Fichiers. capture non utilisé (user/env = caméra). -->
-              <input type="file" id="csvFileInput" accept="*/*,.csv,.txt" capture="filesystem" multiple />
+              <!-- Pas d'accept ni capture : sur mobile Chrome ça évite le flux "caméra uniquement" et propose Fichiers/Parcourir -->
+              <input type="file" id="csvFileInput" multiple />
               <label for="csvFileInput" class="file-label">
                 📁 Choisir un ou plusieurs fichiers CSV
               </label>

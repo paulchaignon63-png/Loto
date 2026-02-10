@@ -82,9 +82,28 @@ function initImport() {
     return;
   }
 
+  // #region agent log
+  (function () {
+    const accept = fileInput.getAttribute('accept');
+    const capture = fileInput.getAttribute('capture');
+    const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
+    const standalone = typeof window !== 'undefined' && (window.matchMedia('(display-mode: standalone)').matches || (navigator.standalone === true));
+    fetch('http://127.0.0.1:7243/ingest/0493409d-9f66-4ebc-8b03-f6f6058ca129', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'main.js:initImport', message: 'file input attrs at init', data: { accept, capture, userAgent: ua.substring(0, 80), standalone }, timestamp: Date.now(), hypothesisId: 'H1' }) }).catch(() => {});
+  })();
+  // #endregion
+
+  fileInput.addEventListener('focus', function () {
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/0493409d-9f66-4ebc-8b03-f6f6058ca129', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'main.js:fileInput.focus', message: 'file input opened (focus)', data: {}, timestamp: Date.now(), hypothesisId: 'H3' }) }).catch(() => {});
+    // #endregion
+  });
+
   // Afficher le nom du fichier sélectionné
   fileInput.addEventListener('change', async (e) => {
-    const files = Array.from(e.target.files);
+    // #region agent log
+    const files = Array.from(e.target.files || []);
+    fetch('http://127.0.0.1:7243/ingest/0493409d-9f66-4ebc-8b03-f6f6058ca129', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'main.js:fileInput.change', message: 'file input change', data: { count: files.length, first: files[0] ? { name: files[0].name, type: files[0].type } : null }, timestamp: Date.now(), hypothesisId: 'H2' }) }).catch(() => {});
+    // #endregion
     const fileNameDiv = document.getElementById('fileName');
     
     if (files.length === 0) {
