@@ -72,12 +72,16 @@
               </div>
             </details>
             <div class="file-upload-area">
-              <!-- Pas d'accept ni capture : sur mobile Chrome ça évite le flux "caméra uniquement" et propose Fichiers/Parcourir -->
-              <input type="file" id="csvFileInput" multiple />
+              <input type="file" id="csvFileInput" accept=".csv,text/csv,text/plain" multiple />
               <label for="csvFileInput" class="file-label">
                 📁 Choisir un ou plusieurs fichiers CSV
               </label>
               <div id="fileName" class="file-name"></div>
+            </div>
+            <div class="import-paste-area" aria-label="Import par collage pour mobile">
+              <p class="paste-label">📋 Sur mobile : collez le contenu du CSV ci‑dessous</p>
+              <textarea id="csvPasteInput" class="csv-paste-input" placeholder="Ouvrez votre fichier CSV dans un éditeur, copiez tout le contenu (Ctrl+A, Ctrl+C) puis collez ici…" rows="6"></textarea>
+              <button type="button" id="csvPasteBtn" class="btn-primary csv-paste-btn">Importer le CSV collé</button>
             </div>
             <div id="importStatus" class="status-message" style="display: none;"></div>
             <div id="dataInfo" class="data-info"></div>

@@ -1,5 +1,5 @@
 import './styles/main.css';
-import { parseFile } from './utils/dataParser.js';
+import { parseFile, parseCSV } from './utils/dataParser.js';
 import { storage } from './utils/storage.js';
 import { checkCombo, formatCheckResults } from './components/checker.js';
 import { renderStats, renderGridVisualization } from './components/stats.js';
@@ -72,10 +72,49 @@ function initDarkMode() {
   });
 }
 
+// Applique les tirages importés (fusion, dédoublonnage, sauvegarde, UI)
+function applyImportedDraws(allNewDraws, totalImported, totalErrors, statusDiv) {
+  const existing = storage.getHistory();
+  if (totalImported === 0) {
+    statusDiv.innerHTML = `<div class="status-message error">
+      Aucune donnée valide trouvée.<br>
+      ${totalErrors > 0 ? `Total d'erreurs: ${totalErrors}<br>` : ''}
+      Vérifiez le format du CSV.
+    </div>`;
+    statusDiv.style.display = 'block';
+    return;
+  }
+  const combined = [...existing, ...allNewDraws];
+  const unique = combined.filter((draw, index, self) =>
+    index === self.findIndex(d =>
+      d.date === draw.date &&
+      JSON.stringify(d.numbers) === JSON.stringify(draw.numbers)
+    )
+  );
+  const newUnique = unique.length - existing.length;
+  storage.saveHistory(unique);
+  console.log('Données sauvegardées:', unique.length, 'tirages (dont', newUnique, 'nouveaux)');
+  statusDiv.innerHTML = `<div class="status-message success">
+    ✅ ${totalImported} tirages importés avec succès !<br>
+    ${newUnique > 0 ? `<strong>${newUnique} nouveaux tirages ajoutés</strong><br>` : ''}
+    Total en base: ${unique.length} tirages
+    ${totalErrors > 0 ? `<br>⚠️ ${totalErrors} lignes ignorées (format invalide ou doublons)` : ''}
+  </div>`;
+  statusDiv.style.display = 'block';
+  updateDataInfo();
+  renderAllStats();
+  setTimeout(() => {
+    const statsTab = document.querySelector('[data-tab="stats"]');
+    if (statsTab) statsTab.click();
+  }, 1500);
+}
+
 // Import de fichiers
 function initImport() {
   const fileInput = document.getElementById('csvFileInput');
   const statusDiv = document.getElementById('importStatus');
+  const pasteInput = document.getElementById('csvPasteInput');
+  const pasteBtn = document.getElementById('csvPasteBtn');
 
   if (!fileInput || !statusDiv) {
     console.error('Éléments d\'import introuvables');
@@ -98,6 +137,31 @@ function initImport() {
     // #endregion
   });
 
+  // Import par collage (alternative mobile)
+  if (pasteBtn && pasteInput) {
+    pasteBtn.addEventListener('click', () => {
+      const text = (pasteInput.value || '').trim();
+      if (!text) {
+        statusDiv.innerHTML = '<div class="status-message error">Collez d’abord le contenu du fichier CSV dans la zone ci‑dessus.</div>';
+        statusDiv.style.display = 'block';
+        return;
+      }
+      statusDiv.innerHTML = '<div class="status-message info">⏳ Traitement du CSV collé...</div>';
+      statusDiv.style.display = 'block';
+      try {
+        const result = parseCSV(text);
+        applyImportedDraws(result.draws, result.valid, result.errors, statusDiv);
+        pasteInput.value = '';
+      } catch (error) {
+        console.error('Erreur import par collage:', error);
+        statusDiv.innerHTML = `<div class="status-message error">
+          Erreur lors de l'import du CSV collé.<br>
+          ${error.message || 'Erreur inconnue'}
+        </div>`;
+      }
+    });
+  }
+
   // Afficher le nom du fichier sélectionné
   fileInput.addEventListener('change', async (e) => {
     // #region agent log
@@ -113,7 +177,6 @@ function initImport() {
       return;
     }
 
-    // Afficher les fichiers sélectionnés
     if (fileNameDiv) {
       if (files.length === 1) {
         fileNameDiv.textContent = `📄 ${files[0].name} (${(files[0].size / 1024).toFixed(2)} Ko)`;
@@ -127,21 +190,16 @@ function initImport() {
     statusDiv.style.display = 'block';
 
     try {
-      const existing = storage.getHistory();
       let totalImported = 0;
       let totalErrors = 0;
       let allNewDraws = [];
 
-      // Traiter chaque fichier
       for (let i = 0; i < files.length; i++) {
         const file = files[i];
         console.log(`Traitement du fichier ${i + 1}/${files.length}:`, file.name);
-        
         statusDiv.innerHTML = `<div class="status-message info">⏳ Traitement du fichier ${i + 1}/${files.length}: ${file.name}...</div>`;
-        
         const result = await parseFile(file);
         console.log('Résultat du parsing:', result);
-        
         if (result.valid > 0) {
           allNewDraws.push(...result.draws);
           totalImported += result.valid;
@@ -151,48 +209,8 @@ function initImport() {
         }
       }
 
-      if (totalImported === 0) {
-        statusDiv.innerHTML = `<div class="status-message error">
-          Aucune donnée valide trouvée dans les fichiers.<br>
-          Total d'erreurs: ${totalErrors}<br>
-          Vérifiez le format des fichiers CSV.
-        </div>`;
-        return;
-      }
-
-      // Combiner avec les données existantes
-      const combined = [...existing, ...allNewDraws];
-      
-      // Supprimer les doublons (même date + mêmes numéros)
-      const unique = combined.filter((draw, index, self) =>
-        index === self.findIndex(d => 
-          d.date === draw.date && 
-          JSON.stringify(d.numbers) === JSON.stringify(draw.numbers)
-        )
-      );
-
-      const newUnique = unique.length - existing.length;
-      storage.saveHistory(unique);
-      console.log('Données sauvegardées:', unique.length, 'tirages (dont', newUnique, 'nouveaux)');
-
-      statusDiv.innerHTML = `<div class="status-message success">
-        ✅ ${totalImported} tirages importés avec succès !<br>
-        ${newUnique > 0 ? `<strong>${newUnique} nouveaux tirages ajoutés</strong><br>` : ''}
-        Total en base: ${unique.length} tirages
-        ${totalErrors > 0 ? `<br>⚠️ ${totalErrors} lignes ignorées (format invalide ou doublons)` : ''}
-      </div>`;
-
-      updateDataInfo();
-      renderAllStats();
-      
-      // Réinitialiser l'input pour permettre de réimporter
+      applyImportedDraws(allNewDraws, totalImported, totalErrors, statusDiv);
       fileInput.value = '';
-      
-      // Basculer vers l'onglet stats après un court délai
-      setTimeout(() => {
-        const statsTab = document.querySelector('[data-tab="stats"]');
-        if (statsTab) statsTab.click();
-      }, 1500);
     } catch (error) {
       console.error('Erreur lors de l\'import:', error);
       statusDiv.innerHTML = `<div class="status-message error">

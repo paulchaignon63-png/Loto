@@ -198,6 +198,60 @@ body {
   display: none;
 }
 
+/* Import par collage (alternative mobile) */
+.import-paste-area {
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid var(--border-color, rgba(0, 0, 0, 0.1));
+}
+
+.paste-label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.csv-paste-input {
+  width: 100%;
+  min-height: 120px;
+  padding: 12px;
+  font-family: ui-monospace, "Cascadia Code", "Source Code Pro", Menlo, monospace;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  background: var(--bg-primary);
+  border: 2px solid var(--border-color, rgba(0, 0, 0, 0.15));
+  border-radius: 10px;
+  color: var(--text-primary);
+  resize: vertical;
+  box-sizing: border-box;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.csv-paste-input::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.9;
+}
+
+.csv-paste-input:focus {
+  outline: none;
+  border-color: var(--accent-blue);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2);
+}
+
+.csv-paste-btn {
+  margin-top: 12px;
+  width: 100%;
+  max-width: 320px;
+}
+
+@media (min-width: 600px) {
+  .csv-paste-btn {
+    width: auto;
+  }
+}
+
 details summary {
   user-select: none;
 }
