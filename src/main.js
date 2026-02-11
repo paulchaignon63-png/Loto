@@ -208,15 +208,20 @@ function initImport() {
 function initChecker() {
   const form = document.getElementById('checkerForm');
   const resultsDiv = document.getElementById('checkerResults');
+  // #region agent log
+  fetch('http://127.0.0.1:7243/ingest/0493409d-9f66-4ebc-8b03-f6f6058ca129',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'main.js:initChecker',message:'checker init',data:{formExists:!!form,resultsDivExists:!!resultsDiv},timestamp:Date.now(),hypothesisId:'H3'})}).catch(()=>{});
+  // #endregion
 
   form.addEventListener('submit', (e) => {
     e.preventDefault();
-    
+    // #region agent log
     const numberInputs = form.querySelectorAll('.number-input');
     const starInputs = form.querySelectorAll('.star-input');
-    
     const numbers = Array.from(numberInputs).map(input => parseInt(input.value));
     const stars = Array.from(starInputs).map(input => parseInt(input.value));
+    const draws = storage.getHistory();
+    fetch('http://127.0.0.1:7243/ingest/0493409d-9f66-4ebc-8b03-f6f6058ca129',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'main.js:checker:submit',message:'before checkCombo',data:{numbers,stars,drawsCount:draws.length},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
+    // #endregion
 
     // Validation
     if (numbers.some(n => isNaN(n) || n < 1 || n > 50)) {
@@ -230,13 +235,16 @@ function initChecker() {
 
     const combo = { numbers, stars };
     const results = checkCombo(combo);
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/0493409d-9f66-4ebc-8b03-f6f6058ca129',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'main.js:checker:afterCheck',message:'checkCombo result',data:{hasError:!!results.error,errorMsg:results.error||null},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
+    // #endregion
     resultsDiv.innerHTML = formatCheckResults(results, combo);
 
     // Visualisation de grille
     const gridHtml = renderGridVisualization(combo);
     resultsDiv.innerHTML += gridHtml;
 
-    // Bouton sauvegarder
+    // Bouton sauvegarder (uniquement après vérification réussie)
     const saveBtn = document.createElement('button');
     saveBtn.type = 'button';
     saveBtn.className = 'btn-secondary save-combo-btn';
@@ -244,6 +252,9 @@ function initChecker() {
     saveBtn.dataset.stars = stars.join(',');
     saveBtn.textContent = '💾 Sauvegarder cette combo';
     resultsDiv.appendChild(saveBtn);
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/0493409d-9f66-4ebc-8b03-f6f6058ca129',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'main.js:checker:afterAppend',message:'save btn appended',data:{},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
+    // #endregion
   });
 }
 
