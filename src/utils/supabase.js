@@ -1,34 +1,18 @@
 /**
- * Client Supabase (Auth + Data API)
+ * Configuration Supabase - Étape 1
+ * Connexion au projet sans modifier le reste de l'app.
  */
 import { createClient } from '@supabase/supabase-js';
 
-const url = import.meta.env.VITE_SUPABASE_URL;
-const anonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
-
-// #region agent log
-fetch('http://127.0.0.1:7243/ingest/0493409d-9f66-4ebc-8b03-f6f6058ca129',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'supabase.js:init',message:'supabase env',data:{hasUrl:!!url,hasKey:!!anonKey,urlLen:url?.length||0},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
-// #endregion
-
-if (!url || !anonKey) {
-  console.warn('Combo Check: VITE_SUPABASE_URL ou VITE_SUPABASE_ANON_KEY manquant. Sync désactivée.');
-}
+const SUPABASE_URL = 'https://uteqsqiqzcsuztnjmoto.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InV0ZXFzcWlxemNzdXp0bmptb3RvIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA4NDgxOTQsImV4cCI6MjA4NjQyNDE5NH0.dqML-EV_7QziwUPHWUdJ_x-cEutB9mPvhKfgcbuz-5M';
 
 let supabase = null;
-if (url && anonKey) {
-  try {
-    supabase = createClient(url, anonKey);
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/0493409d-9f66-4ebc-8b03-f6f6058ca129',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'supabase.js:createClient',message:'client created',data:{},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
-    // #endregion
-  } catch (e) {
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/0493409d-9f66-4ebc-8b03-f6f6058ca129',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'supabase.js:createClient',message:'createClient throw',data:{msg:String(e?.message||e)},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
-    // #endregion
-    console.warn('Combo Check: Supabase client indisponible, mode local uniquement.', e?.message || e);
-    supabase = null;
-  }
+try {
+  supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  console.log('[Supabase] Connexion OK — client créé', SUPABASE_URL);
+} catch (e) {
+  console.error('[Supabase] Erreur création client:', e?.message || e);
 }
 
 export { supabase };
-export const isSupabaseConfigured = () => !!supabase;

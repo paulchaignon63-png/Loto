@@ -1,3 +1,4 @@
+import { supabase } from './utils/supabase.js';
 import './styles/main.css';
 import { parseFile, parseCSV } from './utils/dataParser.js';
 import { storage } from './utils/storage.js';
@@ -7,12 +8,17 @@ import { generateByMode } from './utils/generator.js';
 import { renderPersonalHistory, exportToCSV } from './components/history.js';
 import { renderComboAnalysis } from './components/analysisDisplay.js';
 
+console.log('[Supabase] Client chargé:', supabase ? 'OK' : 'null');
+
+const AUTH_USER_KEY = 'supabase_user_id';
+
 // Initialisation
 document.addEventListener('DOMContentLoaded', () => {
   console.log('Initialisation de l\'application...');
   try {
     initTabs();
     initDarkMode();
+    initAuth();
     initImport();
     initChecker();
     initGenerator();
@@ -24,6 +30,87 @@ document.addEventListener('DOMContentLoaded', () => {
     console.error('Erreur lors de l\'initialisation:', error);
   }
 });
+
+// Étape 2 : Auth simple (bouton + modal, user.id en localStorage)
+function initAuth() {
+  if (!supabase) return;
+  const authBtn = document.getElementById('authBtn');
+  const authModal = document.getElementById('authModal');
+  const authForm = document.getElementById('authForm');
+  const authError = document.getElementById('authError');
+  const authModalClose = document.getElementById('authModalClose');
+
+  function updateAuthButton() {
+    const userId = localStorage.getItem(AUTH_USER_KEY);
+    authBtn.textContent = userId ? 'Déconnexion' : 'Se connecter';
+  }
+
+  async function loadCombosFromSupabase(userId) {
+    if (!supabase || !userId) return;
+    try {
+      const { data: rows, error } = await supabase
+        .from('personal_combos')
+        .select('id, numbers, stars, date')
+        .eq('user_id', userId)
+        .order('created_at', { ascending: false });
+      if (error) throw error;
+      const combos = (rows || []).map(r => ({ id: r.id, numbers: r.numbers, stars: r.stars, date: r.date }));
+      storage.setPersonalCombos(combos);
+    } catch (e) {
+      console.warn('Chargement combos Supabase:', e?.message || e);
+    }
+  }
+
+  async function restoreSession() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (session?.user?.id) {
+      localStorage.setItem(AUTH_USER_KEY, session.user.id);
+      await loadCombosFromSupabase(session.user.id);
+    }
+    updateAuthButton();
+  }
+
+  restoreSession();
+
+  authBtn.addEventListener('click', async () => {
+    if (localStorage.getItem(AUTH_USER_KEY)) {
+      await supabase.auth.signOut();
+      localStorage.removeItem(AUTH_USER_KEY);
+      storage.setPersonalCombos([]);
+      renderHistory();
+      const firstTab = document.querySelector('.tab-btn[data-tab="import"]');
+      if (firstTab) firstTab.click();
+      updateAuthButton();
+      return;
+    }
+    authModal.hidden = false;
+    if (authError) authError.textContent = '';
+  });
+
+  authModalClose?.addEventListener('click', () => { authModal.hidden = true; });
+  authModal?.querySelector('.auth-modal-backdrop')?.addEventListener('click', () => { authModal.hidden = true; });
+
+  authForm?.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    if (authError) authError.textContent = '';
+    const email = document.getElementById('authEmail')?.value?.trim();
+    const password = document.getElementById('authPassword')?.value;
+    if (!email || !password) return;
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) {
+      if (authError) authError.textContent = error.message || 'Erreur de connexion';
+      return;
+    }
+    if (data?.user?.id) {
+      localStorage.setItem(AUTH_USER_KEY, data.user.id);
+      await loadCombosFromSupabase(data.user.id);
+      updateAuthButton();
+      renderHistory();
+    }
+    authModal.hidden = true;
+    authForm.reset();
+  });
+}
 
 // Gestion des onglets
 function initTabs() {
@@ -315,11 +402,11 @@ function initHistory() {
   });
 
   // Gestion de la suppression
-  document.addEventListener('click', (e) => {
+  document.addEventListener('click', async (e) => {
     if (e.target.classList.contains('delete-btn')) {
-      const id = parseInt(e.target.getAttribute('data-id'), 10);
+      const id = e.target.getAttribute('data-id');
       if (confirm('Supprimer cette combinaison ?')) {
-        storage.deletePersonalCombo(id);
+        await storage.deletePersonalCombo(id);
         renderHistory();
       }
     }
@@ -329,7 +416,7 @@ function initHistory() {
       const numbers = btn.dataset.numbers?.split(',').map(n => parseInt(n.trim(), 10));
       const stars = btn.dataset.stars?.split(',').map(s => parseInt(s.trim(), 10));
       if (numbers?.length === 5 && stars?.length === 2) {
-        storage.addPersonalCombo({ numbers, stars });
+        await storage.addPersonalCombo({ numbers, stars });
         btn.textContent = '✓ Sauvegardé !';
         btn.disabled = true;
         renderHistory();
