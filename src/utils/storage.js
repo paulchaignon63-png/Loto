@@ -8,9 +8,6 @@ const STORAGE_KEYS = {
 };
 
 export const storage = {
-  /**
-   * Sauvegarder l'historique des tirages
-   */
   saveHistory(draws) {
     try {
       localStorage.setItem(STORAGE_KEYS.HISTORY, JSON.stringify(draws));
@@ -21,9 +18,6 @@ export const storage = {
     }
   },
 
-  /**
-   * Récupérer l'historique des tirages
-   */
   getHistory() {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.HISTORY);
@@ -34,9 +28,6 @@ export const storage = {
     }
   },
 
-  /**
-   * Ajouter une combo personnelle
-   */
   addPersonalCombo(combo) {
     try {
       const combos = this.getPersonalCombos();
@@ -56,9 +47,6 @@ export const storage = {
     }
   },
 
-  /**
-   * Récupérer toutes les combos personnelles
-   */
   getPersonalCombos() {
     try {
       const data = localStorage.getItem(STORAGE_KEYS.PERSONAL_COMBOS);
@@ -69,9 +57,6 @@ export const storage = {
     }
   },
 
-  /**
-   * Supprimer une combo personnelle
-   */
   deletePersonalCombo(id) {
     try {
       const combos = this.getPersonalCombos();
@@ -84,9 +69,6 @@ export const storage = {
     }
   },
 
-  /**
-   * Vider toutes les données
-   */
   clearAll() {
     try {
       localStorage.removeItem(STORAGE_KEYS.HISTORY);

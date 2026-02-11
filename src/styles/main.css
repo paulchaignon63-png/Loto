@@ -43,13 +43,15 @@ body {
   margin: 0 auto;
 }
 
-/* Header */
+/* Header (compact, ne doit pas occuper tout l’écran) */
 .header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 30px;
-  padding: 20px;
+  padding: 16px 20px;
+  min-height: 0;
+  max-height: 80px;
   background: var(--bg-secondary);
   border-radius: var(--border-radius);
   box-shadow: 8px 8px 16px var(--shadow-dark), -8px -8px 16px var(--shadow-light);
@@ -68,10 +70,14 @@ body {
 
 .header h1 .logo-loto {
   flex-shrink: 0;
-  height: 1.4em;
+  height: 2rem;
+  max-height: 40px;
   width: auto;
+  max-width: 70px;
+  object-fit: contain;
   vertical-align: middle;
   opacity: 0.95;
+  display: block;
 }
 
 .dark-mode-toggle {
