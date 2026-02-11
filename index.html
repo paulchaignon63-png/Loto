@@ -8,12 +8,12 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
     <link rel="apple-touch-icon" href="/icon-192.png" />
-    <title>EuroMillions Analyzer</title>
+    <title>Combo Check</title>
   </head>
   <body>
     <div id="app">
       <header class="header">
-        <h1>🎰 EuroMillions Analyzer</h1>
+        <h1>🎰 Combo Check</h1>
         <button id="darkModeToggle" class="dark-mode-toggle" aria-label="Basculer le mode sombre">
           🌙
         </button>
@@ -32,9 +32,9 @@
         <section id="import-tab" class="tab-content active">
           <div class="card">
             <h2>Import des données historiques</h2>
-            <p class="info-text info-text-short">Importez des CSV EuroMillions. Les données s'ajoutent, doublons supprimés.</p>
+            <p class="info-text info-text-short">Importez des CSV d'historique des tirages (format FDJ). Les données s'ajoutent, doublons supprimés.</p>
             <p class="info-text info-text-long">
-              Importez un ou plusieurs fichiers CSV avec l'historique des tirages EuroMillions.<br>
+              Importez un ou plusieurs fichiers CSV avec l'historique des tirages.<br>
               Les nouvelles données seront <strong>ajoutées</strong> aux données existantes (pas d'écrasement).<br>
               Les doublons sont automatiquement supprimés.
             </p>
@@ -62,7 +62,7 @@
                 <p><strong>Pas d’API publique FDJ</strong> : la FDJ ne propose pas d’API pour récupérer les tirages automatiquement.</p>
                 <p><strong>Recommandation – mise à jour manuelle (simple) :</strong></p>
                 <ul style="margin: 5px 0; padding-left: 20px;">
-                  <li>Périodiquement (ex. chaque semaine ou chaque mois), allez sur <a href="https://www.fdj.fr/jeux-de-tirage/euromillions-my-million/historique" target="_blank" style="color: var(--accent-blue);">fdj.fr → historique EuroMillions</a>.</li>
+                  <li>Périodiquement (ex. chaque semaine ou chaque mois), allez sur <a href="https://www.fdj.fr/jeux-de-tirage/euromillions-my-million/historique" target="_blank" style="color: var(--accent-blue);">fdj.fr → historique du jeu</a>.</li>
                   <li>Retéléchargez le fichier de la période la plus récente (ex. « Février 2020 – [année] »). Ce ZIP est <strong>mis à jour par la FDJ</strong> avec les nouveaux tirages.</li>
                   <li>Extrayez le CSV du ZIP et réimportez-le ici. Les nouveaux tirages seront <strong>ajoutés</strong>, les doublons supprimés automatiquement.</li>
                 </ul>

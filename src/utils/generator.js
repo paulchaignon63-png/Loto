@@ -1,5 +1,5 @@
 /**
- * Générateur intelligent de combinaisons EuroMillions
+ * Générateur intelligent de combinaisons (5 numéros + 2 étoiles)
  * 3 modes : aléatoire pur, optimisé (recommandé), extrême
  */
 

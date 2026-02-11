@@ -1,6 +1,6 @@
-# 🎰 EuroMillions Analyzer
+# 🎰 Combo Check
 
-Application web locale pour analyser vos combinaisons de loto EuroMillions avec des statistiques, détection de patterns et générateur intelligent.
+Application web locale pour vérifier et analyser vos combinaisons de tirage (5 numéros + 2 étoiles), avec statistiques, détection de patterns et générateur intelligent.
 
 ## 🚀 Installation
 
@@ -20,7 +20,7 @@ npm run dev
 
 ### Source officielle
 
-Les données historiques EuroMillions sont disponibles sur le site de la FDJ :
+Les données historiques des tirages sont disponibles sur le site de la FDJ :
 - **URL** : https://www.fdj.fr/jeux-de-tirage/euromillions-my-million/historique
 - **Format** : Fichiers ZIP contenant des CSV
 
@@ -120,7 +120,7 @@ Date: 01/01/2024 - Nums: 5 12 23 34 45 - Stars: 3 8
 ## 📁 Structure du projet
 
 ```
-Loto/
+combo-check/
 ├── index.html              # Point d'entrée HTML
 ├── src/
 │   ├── main.js            # Point d'entrée JavaScript

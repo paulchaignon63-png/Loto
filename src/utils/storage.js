@@ -1,5 +1,5 @@
 /**
- * Gestion du localStorage pour les données EuroMillions
+ * Gestion du localStorage pour les données de tirages
  */
 
 const STORAGE_KEYS = {

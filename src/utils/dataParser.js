@@ -1,5 +1,5 @@
 /**
- * Parser pour les fichiers CSV d'historique EuroMillions
+ * Parser pour les fichiers CSV d'historique des tirages (format FDJ)
  */
 
 /**

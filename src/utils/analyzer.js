@@ -1,5 +1,5 @@
 /**
- * Analyses statistiques des tirages EuroMillions
+ * Analyses statistiques des tirages (5 numéros + 2 étoiles)
  */
 
 /**

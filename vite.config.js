@@ -6,9 +6,9 @@ export default defineConfig({
     VitePWA({
       registerType: 'autoUpdate',
       manifest: {
-        name: 'EuroMillions Analyzer',
-        short_name: 'EuroMillions',
-        description: 'Analyse et vérification des tirages EuroMillions',
+        name: 'Combo Check',
+        short_name: 'Combo Check',
+        description: 'Vérification et analyse de vos combinaisons de tirage',
         theme_color: '#1a1a2e',
         background_color: '#ffffff',
         display: 'standalone',
