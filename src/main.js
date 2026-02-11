@@ -121,21 +121,6 @@ function initImport() {
     return;
   }
 
-  // #region agent log
-  (function () {
-    const accept = fileInput.getAttribute('accept');
-    const capture = fileInput.getAttribute('capture');
-    const ua = typeof navigator !== 'undefined' ? navigator.userAgent : '';
-    const standalone = typeof window !== 'undefined' && (window.matchMedia('(display-mode: standalone)').matches || (navigator.standalone === true));
-    fetch('http://127.0.0.1:7243/ingest/0493409d-9f66-4ebc-8b03-f6f6058ca129', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'main.js:initImport', message: 'file input attrs at init', data: { accept, capture, userAgent: ua.substring(0, 80), standalone }, timestamp: Date.now(), hypothesisId: 'H1' }) }).catch(() => {});
-  })();
-  // #endregion
-
-  fileInput.addEventListener('focus', function () {
-    // #region agent log
-    fetch('http://127.0.0.1:7243/ingest/0493409d-9f66-4ebc-8b03-f6f6058ca129', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'main.js:fileInput.focus', message: 'file input opened (focus)', data: {}, timestamp: Date.now(), hypothesisId: 'H3' }) }).catch(() => {});
-    // #endregion
-  });
 
   // Import par collage (alternative mobile)
   if (pasteBtn && pasteInput) {
@@ -164,10 +149,7 @@ function initImport() {
 
   // Afficher le nom du fichier sélectionné
   fileInput.addEventListener('change', async (e) => {
-    // #region agent log
     const files = Array.from(e.target.files || []);
-    fetch('http://127.0.0.1:7243/ingest/0493409d-9f66-4ebc-8b03-f6f6058ca129', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ location: 'main.js:fileInput.change', message: 'file input change', data: { count: files.length, first: files[0] ? { name: files[0].name, type: files[0].type } : null }, timestamp: Date.now(), hypothesisId: 'H2' }) }).catch(() => {});
-    // #endregion
     const fileNameDiv = document.getElementById('fileName');
     
     if (files.length === 0) {
@@ -253,6 +235,15 @@ function initChecker() {
     // Visualisation de grille
     const gridHtml = renderGridVisualization(combo);
     resultsDiv.innerHTML += gridHtml;
+
+    // Bouton sauvegarder
+    const saveBtn = document.createElement('button');
+    saveBtn.type = 'button';
+    saveBtn.className = 'btn-secondary save-combo-btn';
+    saveBtn.dataset.numbers = numbers.join(',');
+    saveBtn.dataset.stars = stars.join(',');
+    saveBtn.textContent = '💾 Sauvegarder cette combo';
+    resultsDiv.appendChild(saveBtn);
   });
 }
 
@@ -281,15 +272,14 @@ function initGenerator() {
         generateBtn.disabled = false;
         generateBtn.classList.remove('generating');
 
-        // Afficher la combo (boules grises + étoiles dorées)
+        // Afficher la combo (boules grises + étoiles dorées) + bouton sauvegarder
+        const nums = result.combo.numbers;
+        const stars = result.combo.stars;
         let html = '<div class="combo-display">';
-        result.combo.numbers.forEach(num => {
-          html += `<div class="combo-number">${num}</div>`;
-        });
-        result.combo.stars.forEach(star => {
-          html += `<div class="combo-star">${star}</div>`;
-        });
+        nums.forEach(num => { html += `<div class="combo-number">${num}</div>`; });
+        stars.forEach(star => { html += `<div class="combo-star">${star}</div>`; });
         html += '</div>';
+        html += `<button type="button" class="btn-secondary save-combo-btn" data-numbers="${nums.join(',')}" data-stars="${stars.join(',')}">💾 Sauvegarder cette combo</button>`;
         comboDiv.innerHTML = html;
 
         // Analyse complète (nouveau design) + grille
@@ -305,39 +295,7 @@ function initGenerator() {
 
 // Historique personnel
 function initHistory() {
-  const saveForm = document.getElementById('saveComboForm');
   const exportBtn = document.getElementById('exportBtn');
-
-  saveForm.addEventListener('submit', (e) => {
-    e.preventDefault();
-    
-    const numberInputs = saveForm.querySelectorAll('.number-input');
-    const starInputs = saveForm.querySelectorAll('.star-input');
-    
-    const numbers = Array.from(numberInputs).map(input => parseInt(input.value));
-    const stars = Array.from(starInputs).map(input => parseInt(input.value));
-
-    // Validation
-    if (numbers.some(n => isNaN(n) || n < 1 || n > 50) || new Set(numbers).size !== 5) {
-      alert('Veuillez entrer 5 numéros valides et différents (1-50).');
-      return;
-    }
-    if (stars.some(s => isNaN(s) || s < 1 || s > 12) || new Set(stars).size !== 2) {
-      alert('Veuillez entrer 2 étoiles valides et différentes (1-12).');
-      return;
-    }
-
-    const combo = { numbers, stars };
-    storage.addPersonalCombo(combo);
-    
-    // Réinitialiser le formulaire
-    saveForm.reset();
-    
-    // Rafraîchir l'affichage
-    renderHistory();
-    
-    alert('Combinaison sauvegardée !');
-  });
 
   // Export CSV
   exportBtn.addEventListener('click', () => {
@@ -364,6 +322,18 @@ function initHistory() {
       const id = parseInt(e.target.getAttribute('data-id'));
       if (confirm('Supprimer cette combinaison ?')) {
         storage.deletePersonalCombo(id);
+        renderHistory();
+      }
+    }
+    // Gestion du bouton "Sauvegarder cette combo" (Générer / Vérifier)
+    if (e.target.classList.contains('save-combo-btn')) {
+      const btn = e.target;
+      const numbers = btn.dataset.numbers?.split(',').map(n => parseInt(n.trim()));
+      const stars = btn.dataset.stars?.split(',').map(s => parseInt(s.trim()));
+      if (numbers?.length === 5 && stars?.length === 2) {
+        storage.addPersonalCombo({ numbers, stars });
+        btn.textContent = '✓ Sauvegardé !';
+        btn.disabled = true;
         renderHistory();
       }
     }

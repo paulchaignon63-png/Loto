@@ -13,7 +13,7 @@
   <body>
     <div id="app">
       <header class="header">
-        <h1>🎰 Combo Check</h1>
+        <h1><img src="/logo-loto.svg" alt="" class="logo-loto" /> Combo Check</h1>
         <button id="darkModeToggle" class="dark-mode-toggle" aria-label="Basculer le mode sombre">
           🌙
         </button>
@@ -165,26 +165,7 @@
         <section id="history-tab" class="tab-content">
           <div class="card">
             <h2>Mon historique personnel</h2>
-            <form id="saveComboForm" class="combo-form">
-              <div class="numbers-group">
-                <label>Numéros (1-50)</label>
-                <div class="number-inputs">
-                  <input type="number" min="1" max="50" class="number-input" data-index="0" required />
-                  <input type="number" min="1" max="50" class="number-input" data-index="1" required />
-                  <input type="number" min="1" max="50" class="number-input" data-index="2" required />
-                  <input type="number" min="1" max="50" class="number-input" data-index="3" required />
-                  <input type="number" min="1" max="50" class="number-input" data-index="4" required />
-                </div>
-              </div>
-              <div class="stars-group">
-                <label>Étoiles (1-12)</label>
-                <div class="star-inputs">
-                  <input type="number" min="1" max="12" class="star-input" data-index="0" required />
-                  <input type="number" min="1" max="12" class="star-input" data-index="1" required />
-                </div>
-              </div>
-              <button type="submit" class="btn-primary">💾 Sauvegarder cette combo</button>
-            </form>
+            <p class="info-text">Combos sauvegardées depuis les pages Générer ou Vérifier.</p>
             <div id="savedCombos" class="saved-combos"></div>
             <button id="exportBtn" class="btn-secondary">📤 Exporter en CSV</button>
           </div>

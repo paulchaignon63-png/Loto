@@ -3,27 +3,23 @@
  */
 
 import { storage } from '../utils/storage.js';
-import { findSimilarCombos } from '../utils/analyzer.js';
 
 /**
- * Affiche toutes les combos sauvegardées
+ * Affiche toutes les combos sauvegardées avec leur date
  */
 export function renderPersonalHistory() {
   const combos = storage.getPersonalCombos();
   
   if (combos.length === 0) {
-    return '<p class="info-text">Aucune combinaison sauvegardée pour le moment.</p>';
+    return '<p class="info-text">Aucune combinaison sauvegardée pour le moment.<br>Sauvegardez des combos depuis les pages Générer ou Vérifier.</p>';
   }
 
-  const draws = storage.getHistory();
   let html = '<div class="saved-combos">';
 
   // Trier par date (plus récent en premier)
   combos.sort((a, b) => new Date(b.date) - new Date(a.date));
 
   combos.forEach(combo => {
-    const similar = draws.length > 0 ? findSimilarCombos(combo, draws) : { exact: [], fourMatch: [], threeMatch: [] };
-    
     html += '<div class="saved-combo-item">';
     html += '<div>';
     html += `<div class="combo-date">${new Date(combo.date).toLocaleDateString('fr-FR')}</div>`;
@@ -37,24 +33,7 @@ export function renderPersonalHistory() {
       html += `<span class="combo-star">${star}</span>`;
     });
     
-    html += '</div>';
-    
-    // Afficher les résultats si disponibles
-    if (draws.length > 0) {
-      html += '<div style="margin-top: 10px; font-size: 0.9rem; color: var(--text-secondary);">';
-      if (similar.exact.length > 0) {
-        html += `⚠️ Sortie ${similar.exact.length}x`;
-      } else if (similar.fourMatch.length > 0) {
-        html += `🎯 ${similar.fourMatch.length} fois avec 4/5`;
-      } else if (similar.threeMatch.length > 0) {
-        html += `📊 ${similar.threeMatch.length} fois avec 3/5`;
-      } else {
-        html += '✅ Jamais sortie';
-      }
-      html += '</div>';
-    }
-    
-    html += '</div>';
+    html += '</div></div>';
     html += `<button class="delete-btn" data-id="${combo.id}">Supprimer</button>`;
     html += '</div>';
   });
