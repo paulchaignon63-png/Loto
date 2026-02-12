@@ -12,7 +12,7 @@ export function renderStats() {
   const draws = storage.getHistory();
   
   if (draws.length === 0) {
-    return '<p class="info-text">Importez d\'abord des données pour voir les statistiques.</p>';
+    return '<p class="info-text">Aucune donnée disponible pour le moment.</p>';
   }
 
   const numFrequencies = calculateFrequencies(draws);

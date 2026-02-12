@@ -3,7 +3,7 @@
  * 3 modes : aléatoire pur, optimisé (recommandé), extrême
  */
 
-import { detectPatterns, calculateBanalityScore } from './analyzer.js';
+import { detectPatterns, calculateBanalityScore, isComboInList } from './analyzer.js';
 
 /**
  * Génère un nombre aléatoire entre min et max (inclus)
@@ -108,25 +108,36 @@ function passesExtremeFilters(combo, draws) {
 
 const MAX_ATTEMPTS_OPTIMIZED = 100;
 const MAX_ATTEMPTS_EXTREME = 200;
+const MAX_ATTEMPTS_PURE_RANDOM = 500;
 
 /**
- * Mode aléatoire pur : aucune optimisation, retour immédiat.
+ * Mode aléatoire pur : aucune optimisation, exclut les combos déjà tirées ou en historique.
  */
-export function generatePureRandom(draws = []) {
+export function generatePureRandom(draws = [], excludedCombos = []) {
+  const merged = excludedCombos.length > 0 ? excludedCombos : [...draws];
+  for (let i = 0; i < MAX_ATTEMPTS_PURE_RANDOM; i++) {
+    const combo = generateRandomCombo();
+    if (!isComboInList(combo, merged)) {
+      const banalityScore = draws.length > 0 ? calculateBanalityScore(combo, draws) : 50;
+      return { combo, banalityScore };
+    }
+  }
   const combo = generateRandomCombo();
-  const banalityScore = draws.length > 0 ? calculateBanalityScore(combo, draws) : 50;
-  return { combo, banalityScore };
+  return { combo, banalityScore: draws.length > 0 ? calculateBanalityScore(combo, draws) : 50 };
 }
 
 /**
  * Mode optimisé : filtre les patterns communs, score ≤ 50, max 100 tentatives.
+ * Exclut les combos déjà tirées ou en historique.
  */
-export function generateOptimized(draws = []) {
+export function generateOptimized(draws = [], excludedCombos = []) {
+  const merged = excludedCombos.length > 0 ? excludedCombos : [...draws];
   let bestCombo = null;
   let bestScore = 100;
 
   for (let i = 0; i < MAX_ATTEMPTS_OPTIMIZED; i++) {
     const combo = generateRandomCombo();
+    if (isComboInList(combo, merged)) continue;
     if (!passesOptimizedFilters(combo, draws)) continue;
 
     const score = draws.length > 0 ? calculateBanalityScore(combo, draws) : 50;
@@ -137,6 +148,17 @@ export function generateOptimized(draws = []) {
   }
 
   if (!bestCombo) bestCombo = generateRandomCombo();
+  if (bestCombo && isComboInList(bestCombo, merged)) {
+    bestCombo = null;
+    for (let i = 0; i < MAX_ATTEMPTS_OPTIMIZED; i++) {
+      const combo = generateRandomCombo();
+      if (!isComboInList(combo, merged)) {
+        bestCombo = combo;
+        break;
+      }
+    }
+    if (!bestCombo) bestCombo = generateRandomCombo();
+  }
   if (bestCombo && draws.length === 0) bestScore = 50;
   if (bestCombo && draws.length > 0 && bestScore === 100) bestScore = calculateBanalityScore(bestCombo, draws);
 
@@ -148,13 +170,16 @@ export function generateOptimized(draws = []) {
 
 /**
  * Mode extrême : contraintes renforcées, score < 20, max 200 tentatives.
+ * Exclut les combos déjà tirées ou en historique.
  */
-export function generateExtreme(draws = []) {
+export function generateExtreme(draws = [], excludedCombos = []) {
+  const merged = excludedCombos.length > 0 ? excludedCombos : [...draws];
   let bestCombo = null;
   let bestScore = 100;
 
   for (let i = 0; i < MAX_ATTEMPTS_EXTREME; i++) {
     const combo = generateRandomCombo();
+    if (isComboInList(combo, merged)) continue;
     if (!passesExtremeFilters(combo, draws)) continue;
 
     const score = draws.length > 0 ? calculateBanalityScore(combo, draws) : 50;
@@ -166,6 +191,13 @@ export function generateExtreme(draws = []) {
 
   if (!bestCombo) {
     bestCombo = generateRandomCombo();
+    for (let i = 0; i < MAX_ATTEMPTS_EXTREME; i++) {
+      const combo = generateRandomCombo();
+      if (!isComboInList(combo, merged)) {
+        bestCombo = combo;
+        break;
+      }
+    }
     bestScore = draws.length > 0 ? calculateBanalityScore(bestCombo, draws) : 50;
   }
 
@@ -178,31 +210,35 @@ export function generateExtreme(draws = []) {
 /**
  * Génère une combo selon le mode choisi.
  * @param {string} mode - 'random' | 'optimized' | 'extreme'
- * @param {Array} draws - tirages historiques
+ * @param {Array} draws - tirages historiques (CSV)
+ * @param {Array} personalCombos - combos sauvegardées dans l'historique
  */
-export function generateByMode(mode, draws = []) {
+export function generateByMode(mode, draws = [], personalCombos = []) {
+  const excludedCombos = [...draws, ...(personalCombos || [])];
   switch (mode) {
     case 'random':
-      return generatePureRandom(draws);
+      return generatePureRandom(draws, excludedCombos);
     case 'extreme':
-      return generateExtreme(draws);
+      return generateExtreme(draws, excludedCombos);
     case 'optimized':
     default:
-      return generateOptimized(draws);
+      return generateOptimized(draws, excludedCombos);
   }
 }
 
 // Rétrocompatibilité : ancienne API
-export function generateOptimizedCombo(draws = []) {
-  const result = generateOptimized(draws);
+export function generateOptimizedCombo(draws = [], personalCombos = []) {
+  const excludedCombos = [...draws, ...(personalCombos || [])];
+  const result = generateOptimized(draws, excludedCombos);
   return { combo: result.combo, attempts: 0, optimized: true };
 }
 
-export function generateBestCombo(draws = [], count = 10) {
+export function generateBestCombo(draws = [], count = 10, personalCombos = []) {
+  const excludedCombos = [...draws, ...(personalCombos || [])];
   let bestCombo = null;
   let bestScore = 100;
   for (let i = 0; i < count; i++) {
-    const result = generateOptimized(draws);
+    const result = generateOptimized(draws, excludedCombos);
     if (result.banalityScore < bestScore) {
       bestScore = result.banalityScore;
       bestCombo = result.combo;

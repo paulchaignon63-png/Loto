@@ -190,6 +190,26 @@ body {
   margin-top: 20px;
 }
 
+.auth-toggle {
+  margin-top: 16px;
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+}
+
+.auth-toggle button {
+  background: none;
+  border: none;
+  color: var(--accent);
+  cursor: pointer;
+  text-decoration: underline;
+  padding: 0;
+  font: inherit;
+}
+
+.auth-toggle button:hover {
+  color: var(--accent-hover, var(--accent));
+}
+
 /* Tabs */
 .tabs {
   display: flex;
@@ -267,6 +287,15 @@ body {
   color: var(--text-secondary);
   margin-bottom: 20px;
   line-height: 1.6;
+}
+
+.info-text.local-hint {
+  padding: 10px 12px;
+  border-radius: 8px;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color, rgba(255,255,255,0.1));
+  margin-bottom: 16px;
+  font-size: 0.95rem;
 }
 
 /* File Upload */
@@ -502,6 +531,29 @@ details ul {
   background: rgba(102, 126, 234, 0.2);
   color: var(--accent-blue);
   border: 2px solid var(--accent-blue);
+}
+
+.next-draw-notification {
+  margin-bottom: 16px;
+  padding: 12px 16px;
+  background: linear-gradient(135deg, rgba(102, 126, 234, 0.15), rgba(118, 75, 162, 0.1));
+  border-radius: 12px;
+  border-left: 4px solid var(--accent-blue);
+  font-size: 0.95rem;
+}
+.next-draw-notification p { margin: 4px 0; }
+.next-draw-notification p:first-child { margin-top: 0; }
+.next-draw-notification p:last-child { margin-bottom: 0; }
+
+.calendar-list ul {
+  list-style: none;
+  padding: 0;
+}
+.calendar-list li {
+  padding: 8px 12px;
+  margin: 4px 0;
+  background: var(--bg-primary);
+  border-radius: 8px;
 }
 
 .data-info {
@@ -879,9 +931,38 @@ details ul {
   align-items: center;
 }
 
+.combo-date-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
 .combo-date {
   color: var(--text-secondary);
   font-size: 0.9rem;
+}
+
+.combo-winning-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 26px;
+  height: 26px;
+  background: linear-gradient(135deg, #fbbf24 0%, #d97706 100%);
+  color: #1a1a1a;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(217, 119, 6, 0.4);
+  cursor: help;
+  flex-shrink: 0;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.combo-winning-badge:hover {
+  transform: scale(1.1);
+  box-shadow: 0 3px 8px rgba(217, 119, 6, 0.5);
 }
 
 .delete-btn {

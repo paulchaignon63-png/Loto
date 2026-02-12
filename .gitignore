@@ -30,3 +30,6 @@ dist-ssr
 # Env (clés Supabase)
 .env
 .env.local
+
+# Supabase CLI temp
+supabase/.temp

@@ -15,4 +15,6 @@ try {
   console.error('[Supabase] Erreur création client:', e?.message || e);
 }
 
-export { supabase };
+const isSupabaseConfigured = !!supabase;
+
+export { supabase, isSupabaseConfigured, SUPABASE_URL, SUPABASE_ANON_KEY };

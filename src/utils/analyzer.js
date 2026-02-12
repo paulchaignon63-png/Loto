@@ -237,6 +237,21 @@ export function findSimilarCombos(combo, draws) {
 }
 
 /**
+ * Vérifie si une combo (5 numéros + 2 étoiles) est exactement dans la liste
+ */
+export function isComboInList(combo, list) {
+  if (!list || list.length === 0) return false;
+  const comboNums = new Set(combo.numbers);
+  const comboStars = new Set(combo.stars);
+  return list.some(item => {
+    const itemNums = new Set(item.numbers);
+    const itemStars = new Set(item.stars);
+    return comboNums.size === 5 && [...comboNums].every(n => itemNums.has(n)) &&
+           comboStars.size === 2 && [...comboStars].every(s => itemStars.has(s));
+  });
+}
+
+/**
  * Analyse la distribution sur la grille
  */
 export function analyzeGridDistribution(combo) {

@@ -6,15 +6,20 @@ import { findSimilarCombos, detectPatterns, calculateBanalityScore } from '../ut
 import { storage } from '../utils/storage.js';
 import { renderComboAnalysis } from './analysisDisplay.js';
 
+/** Date au format DD/MM/YYYY = tirage CSV */
+const isDrawFromCSV = (item) => /\d{2}\/\d{2}\/\d{4}/.test(item.date || '');
+
 /**
  * Vérifie une combinaison et affiche les résultats
  */
 export function checkCombo(combo) {
   const draws = storage.getHistory();
-  
-  if (draws.length === 0) {
+  const personalCombos = storage.getPersonalCombos();
+  const allToCheck = [...draws, ...personalCombos];
+
+  if (allToCheck.length === 0) {
     return {
-      error: 'Aucune donnée historique chargée. Veuillez d\'abord importer des données.'
+      error: 'Aucune donnée chargée. Importez des tirages CSV et/ou ajoutez des combos à votre historique.'
     };
   }
 
@@ -37,14 +42,14 @@ export function checkCombo(combo) {
     };
   }
 
-  // Trouver les combos similaires
-  const similar = findSimilarCombos(combo, draws);
-  
+  // Trouver les combos similaires (CSV + historique personnel)
+  const similar = findSimilarCombos(combo, allToCheck);
+
   // Détecter les patterns
   const patterns = detectPatterns(combo);
-  
-  // Calculer le score de banalité
-  const banalityScore = calculateBanalityScore(combo, draws);
+
+  // Calculer le score de banalité (uniquement sur les tirages CSV)
+  const banalityScore = draws.length > 0 ? calculateBanalityScore(combo, draws) : 50;
 
   return {
     exact: similar.exact,
@@ -68,16 +73,28 @@ export function formatCheckResults(results, combo) {
   let html = '<div class="results">';
 
   // Combo exacte
+  const exactFromDraws = results.exact.filter(isDrawFromCSV);
+  const exactFromHistory = results.exact.filter((d) => !isDrawFromCSV(d));
   if (results.exact.length > 0) {
     html += '<div class="result-item">';
-    html += `<h3>⚠️ Cette combinaison exacte est déjà sortie ${results.exact.length} fois !</h3>`;
-    results.exact.forEach(draw => {
-      html += `<p><strong>Date:</strong> ${draw.date}</p>`;
-    });
+    const parts = [];
+    if (exactFromDraws.length > 0) parts.push(`${exactFromDraws.length} fois dans les tirages`);
+    if (exactFromHistory.length > 0) parts.push(`${exactFromHistory.length} dans votre historique`);
+    html += `<h3>⚠️ Cette combinaison exacte existe déjà (${parts.join(', ')})</h3>`;
+    if (exactFromDraws.length > 0) {
+      html += '<p><strong>Tirages :</strong></p>';
+      exactFromDraws.slice(0, 5).forEach((d) => {
+        html += `<p style="margin: 2px 0;">${d.date}</p>`;
+      });
+      if (exactFromDraws.length > 5) html += `<p>... et ${exactFromDraws.length - 5} autre(s)</p>`;
+    }
+    if (exactFromHistory.length > 0) {
+      html += '<p><strong>Votre historique :</strong> déjà enregistrée</p>';
+    }
     html += '</div>';
   } else {
     html += '<div class="result-item">';
-    html += '<h3>✅ Cette combinaison exacte n\'est jamais sortie</h3>';
+    html += '<h3>✅ Cette combinaison exacte n\'existe pas (ni dans les tirages, ni dans votre historique)</h3>';
     html += '</div>';
   }
 

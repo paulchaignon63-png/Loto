@@ -15,7 +15,8 @@
       <header class="header">
         <h1><img src="/logo-loto.svg" alt="" class="logo-loto" /> Combo Check</h1>
         <div class="header-actions">
-          <button type="button" id="authBtn" class="btn-auth">Se connecter</button>
+          <button type="button" id="adminBtn" class="btn-secondary" style="display: none;">Admin</button>
+          <button type="button" id="authBtn" class="btn-auth">Sign in</button>
           <button id="darkModeToggle" class="dark-mode-toggle" aria-label="Basculer le mode sombre">
             🌙
           </button>
@@ -25,93 +26,54 @@
       <div id="authModal" class="auth-modal" hidden>
         <div class="auth-modal-backdrop"></div>
         <div class="auth-modal-box">
-          <h2>Connexion</h2>
+          <h2 id="authModalTitle">Sign in</h2>
           <form id="authForm">
             <label for="authEmail">Email</label>
-            <input type="email" id="authEmail" required placeholder="vous@exemple.fr" />
-            <label for="authPassword">Mot de passe</label>
+            <input type="email" id="authEmail" required placeholder="you@example.com" />
+            <label for="authPassword">Password</label>
             <input type="password" id="authPassword" required placeholder="••••••••" minlength="6" />
             <p id="authError" class="auth-error"></p>
             <div class="auth-modal-btns">
-              <button type="submit" class="btn-primary">Se connecter</button>
-              <button type="button" id="authModalClose" class="btn-secondary">Annuler</button>
+              <button type="submit" class="btn-primary" id="authSubmitBtn">Sign in</button>
+              <button type="button" id="authModalClose" class="btn-secondary">Cancel</button>
             </div>
+            <p class="auth-toggle"><span id="authToggleLabel">Don't have an account? </span><button type="button" id="authToggleMode">Sign up</button></p>
           </form>
         </div>
       </div>
 
+      <div id="adminModal" class="auth-modal" hidden>
+        <div class="auth-modal-backdrop"></div>
+        <div class="auth-modal-box">
+          <h2>Import CSV (admin)</h2>
+          <p class="info-text">Collez le contenu d'un CSV FDJ ou importez un fichier.</p>
+          <textarea id="adminCsvInput" class="csv-paste-input" placeholder="Collez le CSV ici..." rows="8" style="width: 100%; margin: 10px 0;"></textarea>
+          <div class="file-upload-area" style="margin: 10px 0;">
+            <input type="file" id="adminCsvFile" accept=".csv,text/csv,text/plain" />
+            <label for="adminCsvFile" class="file-label">Ou choisir un fichier CSV</label>
+          </div>
+          <p id="adminImportStatus" class="auth-error" style="margin: 10px 0;"></p>
+          <div class="auth-modal-btns">
+            <button type="button" id="adminImportBtn" class="btn-primary">Importer</button>
+            <button type="button" id="adminModalClose" class="btn-secondary">Fermer</button>
+          </div>
+        </div>
+      </div>
+
       <nav class="tabs" role="tablist">
-        <button class="tab-btn active" data-tab="import">📥 Import</button>
-        <button class="tab-btn" data-tab="checker">✅ Vérifier</button>
-        <button class="tab-btn" data-tab="stats">📊 Stats</button>
+        <button class="tab-btn active" data-tab="checker">✅ Vérifier</button>
         <button class="tab-btn" data-tab="generator">🎲 Générer</button>
+        <button class="tab-btn" data-tab="calendar">📅 Calendrier</button>
         <button class="tab-btn" data-tab="history">📝 Historique</button>
+        <button class="tab-btn" data-tab="stats">📊 Stats</button>
       </nav>
 
       <main class="main-content">
-        <!-- Section Import -->
-        <section id="import-tab" class="tab-content active">
-          <div class="card">
-            <h2>Import des données historiques</h2>
-            <p class="info-text info-text-short">Importez des CSV d'historique des tirages (format FDJ). Les données s'ajoutent, doublons supprimés.</p>
-            <p class="info-text info-text-long">
-              Importez un ou plusieurs fichiers CSV avec l'historique des tirages.<br>
-              Les nouvelles données seront <strong>ajoutées</strong> aux données existantes (pas d'écrasement).<br>
-              Les doublons sont automatiquement supprimés.
-            </p>
-            <details style="margin: 15px 0; padding: 10px; background: var(--bg-primary); border-radius: 8px;">
-              <summary style="cursor: pointer; font-weight: 600; color: var(--accent-blue);">📥 Où trouver les archives ?</summary>
-              <div style="margin-top: 10px; font-size: 0.9rem; line-height: 1.6;">
-                <p><strong>Site officiel FDJ :</strong> <a href="https://www.fdj.fr/jeux-de-tirage/euromillions-my-million/historique" target="_blank" style="color: var(--accent-blue);">fdj.fr/euromillions/historique</a></p>
-                <p><strong>Archives disponibles :</strong></p>
-                <ul style="margin: 5px 0; padding-left: 20px;">
-                  <li>Février 2020 - Janvier 2026 (102 ko)</li>
-                  <li>Mars 2019 - Février 2020 (17 ko)</li>
-                  <li>Septembre 2016 - Février 2019 (41 ko)</li>
-                  <li>Février 2014 - Septembre 2016 (35 ko)</li>
-                  <li>Mai 2011 - Février 2014 (35 ko)</li>
-                  <li><strong>Février 2004 - Mai 2011 (43 ko)</strong> ⭐</li>
-                </ul>
-                <p style="margin-top: 10px; font-style: italic; color: var(--text-secondary);">
-                  Vous pouvez importer plusieurs fichiers pour avoir l'historique complet depuis 2004 !
-                </p>
-              </div>
-            </details>
-            <details style="margin: 15px 0; padding: 10px; background: var(--bg-primary); border-radius: 8px;">
-              <summary style="cursor: pointer; font-weight: 600; color: var(--accent-blue);">🔄 Mise à jour des données – API ou manuel ?</summary>
-              <div style="margin-top: 10px; font-size: 0.9rem; line-height: 1.6;">
-                <p><strong>Pas d’API publique FDJ</strong> : la FDJ ne propose pas d’API pour récupérer les tirages automatiquement.</p>
-                <p><strong>Recommandation – mise à jour manuelle (simple) :</strong></p>
-                <ul style="margin: 5px 0; padding-left: 20px;">
-                  <li>Périodiquement (ex. chaque semaine ou chaque mois), allez sur <a href="https://www.fdj.fr/jeux-de-tirage/euromillions-my-million/historique" target="_blank" style="color: var(--accent-blue);">fdj.fr → historique du jeu</a>.</li>
-                  <li>Retéléchargez le fichier de la période la plus récente (ex. « Février 2020 – [année] »). Ce ZIP est <strong>mis à jour par la FDJ</strong> avec les nouveaux tirages.</li>
-                  <li>Extrayez le CSV du ZIP et réimportez-le ici. Les nouveaux tirages seront <strong>ajoutés</strong>, les doublons supprimés automatiquement.</li>
-                </ul>
-                <p style="margin-top: 10px; color: var(--text-secondary);">
-                  Vous n’avez pas besoin de tout réimporter : un seul fichier (le plus récent) suffit pour ajouter les derniers tirages.
-                </p>
-              </div>
-            </details>
-            <div class="file-upload-area">
-              <input type="file" id="csvFileInput" accept=".csv,text/csv,text/plain" multiple />
-              <label for="csvFileInput" class="file-label">
-                📁 Choisir un ou plusieurs fichiers CSV
-              </label>
-              <div id="fileName" class="file-name"></div>
-            </div>
-            <div class="import-paste-area" aria-label="Import par collage pour mobile">
-              <p class="paste-label">📋 Sur mobile : collez le contenu du CSV ci‑dessous</p>
-              <textarea id="csvPasteInput" class="csv-paste-input" placeholder="Ouvrez votre fichier CSV dans un éditeur, copiez tout le contenu (Ctrl+A, Ctrl+C) puis collez ici…" rows="6"></textarea>
-              <button type="button" id="csvPasteBtn" class="btn-primary csv-paste-btn">Importer le CSV collé</button>
-            </div>
-            <div id="importStatus" class="status-message" style="display: none;"></div>
-            <div id="dataInfo" class="data-info"></div>
-          </div>
-        </section>
-
         <!-- Section Vérification -->
-        <section id="checker-tab" class="tab-content">
+        <section id="checker-tab" class="tab-content active">
           <div class="card">
+            <div id="nextDrawNotification" class="next-draw-notification" aria-live="polite"></div>
+            <div id="dataInfo" class="data-info"></div>
             <h2>Vérifier ma combinaison</h2>
             <form id="checkerForm" class="combo-form">
               <div class="numbers-group">
@@ -137,12 +99,25 @@
           </div>
         </section>
 
+        <!-- Section Calendrier -->
+        <section id="calendar-tab" class="tab-content">
+          <div class="card">
+            <h2>Calendrier des tirages EuroMillions</h2>
+            <div id="calendarContent" class="calendar-content">
+              <p class="info-text">Chargement...</p>
+            </div>
+            <p class="info-text" style="margin-top: 15px;">
+              <a href="https://www.fdj.fr/jeux-de-tirage/euromillions-my-million" target="_blank" rel="noopener" style="color: var(--accent-blue);">Voir la cagnotte et les résultats sur fdj.fr</a>
+            </p>
+          </div>
+        </section>
+
         <!-- Section Statistiques -->
         <section id="stats-tab" class="tab-content">
           <div class="card">
             <h2>Analyses statistiques</h2>
             <div id="statsContent" class="stats-content">
-              <p class="info-text">Importez d'abord des données pour voir les statistiques.</p>
+              <p class="info-text">Chargement des données...</p>
             </div>
           </div>
         </section>
