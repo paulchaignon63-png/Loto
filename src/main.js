@@ -551,6 +551,14 @@ function updateDataInfo() {
   }
 }
 
+// Format HTML du dernier tirage : carrés bleus (combo) + étoiles jaunes (bonus)
+function formatLastDrawHTML(draw, extraStyle = '') {
+  const nums = (draw.numbers || []).map(n => `<span class="last-draw-num">${n}</span>`).join('');
+  const stars = (draw.stars || []).map(s => `<span class="last-draw-star"><span>${s}</span></span>`).join('');
+  const styleAttr = extraStyle ? ` style="${extraStyle}"` : '';
+  return `<p${styleAttr}><strong>Dernier tirage :</strong> ${draw.date} <span class="last-draw-line"><span class="last-draw-nums">${nums}</span><span class="last-draw-plus">+</span><span class="last-draw-stars">${stars}</span></span></p>`;
+}
+
 // Notification prochain tirage (home)
 function renderNextDrawNotification() {
   const div = document.getElementById('nextDrawNotification');
@@ -566,11 +574,11 @@ function renderNextDrawNotification() {
     html += `<p><strong>Prochain tirage :</strong> ${next.label}</p>`;
   }
   if (lastDraw) {
-    html += `<p><strong>Dernier tirage :</strong> ${lastDraw.date} — ${lastDraw.numbers.join(' - ')} + ${lastDraw.stars.join(' - ')}</p>`;
+    html += formatLastDrawHTML(lastDraw);
   } else {
     fetchLatestDraw().then(draw => {
       if (draw) {
-        div.insertAdjacentHTML('beforeend', `<p><strong>Dernier tirage :</strong> ${draw.date} — ${draw.numbers.join(' - ')} + ${draw.stars.join(' - ')}</p>`);
+        div.insertAdjacentHTML('beforeend', formatLastDrawHTML(draw));
       }
     });
   }
@@ -595,15 +603,14 @@ function renderCalendar() {
     ? draws.slice().sort((a, b) => parseDateCal(a.date) - parseDateCal(b.date)).pop()
     : null;
   if (lastDraw) {
-    html += `<p style="margin-top: 15px;"><strong>Dernier tirage :</strong> ${lastDraw.date} — ${lastDraw.numbers.join(' - ')} + ${lastDraw.stars.join(' - ')}</p>`;
+    html += formatLastDrawHTML(lastDraw, 'margin-top: 15px;');
   }
   html += '</div>';
   div.innerHTML = html;
   if (!lastDraw) {
     fetchLatestDraw().then(draw => {
       if (draw) {
-        const extra = `<p style="margin-top: 15px;"><strong>Dernier tirage :</strong> ${draw.date} — ${draw.numbers.join(' - ')} + ${draw.stars.join(' - ')}</p>`;
-        div.insertAdjacentHTML('beforeend', extra);
+        div.insertAdjacentHTML('beforeend', formatLastDrawHTML(draw, 'margin-top: 15px;'));
       }
     });
   }

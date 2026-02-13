@@ -545,6 +545,59 @@ details ul {
 .next-draw-notification p:first-child { margin-top: 0; }
 .next-draw-notification p:last-child { margin-bottom: 0; }
 
+/* Dernier tirage : chiffres en carrés bleus, bonus en pastilles jaunes */
+.last-draw-line {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 6px;
+}
+.last-draw-nums,
+.last-draw-stars {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.last-draw-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 8px;
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(29, 78, 216, 0.35);
+}
+.last-draw-plus {
+  color: var(--text-secondary);
+  font-weight: 700;
+  margin: 0 2px;
+  font-size: 1.1rem;
+}
+.last-draw-star {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 36px;
+  height: 36px;
+  padding: 0 8px;
+  background: linear-gradient(145deg, #d4a017, #b8860b);
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 700;
+  border-radius: 50%;
+  box-shadow: 0 2px 6px rgba(184, 134, 11, 0.4), 0 0 0 1px rgba(255, 255, 255, 0.15) inset;
+}
+.last-draw-star span {
+  line-height: 1;
+}
+
 .calendar-list ul {
   list-style: none;
   padding: 0;
