@@ -194,7 +194,9 @@ function updateAdminVisibility() {
     return;
   }
   supabase?.auth.getSession().then(({ data: { session } }) => {
-    const isAdmin = session?.user?.email === adminEmail;
+    const userEmail = (session?.user?.email || '').toLowerCase().trim();
+    const envEmail = (adminEmail || '').toLowerCase().trim();
+    const isAdmin = userEmail && envEmail && userEmail === envEmail;
     adminBtn.style.display = isAdmin ? '' : 'none';
   });
 }
