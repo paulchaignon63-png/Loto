@@ -42,6 +42,15 @@ export const storage = {
           offset += BATCH;
         }
         drawsCache = all;
+        // #region agent log
+        const sorted = all.slice().sort((a, b) => {
+          const parse = (d) => new Date(d.split('/').reverse().join('-'));
+          return parse(a.date) - parse(b.date);
+        });
+        const firstDate = sorted[0]?.date ?? null;
+        const lastDate = sorted[sorted.length - 1]?.date ?? null;
+        fetch('http://127.0.0.1:7243/ingest/0493409d-9f66-4ebc-8b03-f6f6058ca129',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'storage.js:ensureDrawsLoaded',message:'Tirages chargés depuis Supabase',data:{drawsCount:drawsCache.length,firstDate,lastDate},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
+        // #endregion
         return drawsCache;
       } catch (e) {
         console.error('[Storage] Erreur chargement tirages:', e?.message || e);

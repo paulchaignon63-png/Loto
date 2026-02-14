@@ -34,9 +34,18 @@ export async function fetchLatestDraw() {
   if (!headers) return null;
   try {
     const res = await fetch(`${BASE_URL}/lottery/${TAG}/draw/latest/numbers`, { headers });
-    if (!res.ok) return null;
+    if (!res.ok) {
+      // #region agent log
+      fetch('http://127.0.0.1:7243/ingest/0493409d-9f66-4ebc-8b03-f6f6058ca129',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lotteryApi.js:fetchLatestDraw',message:'API latest draw non-OK',data:{apiStatus:res.status},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
+      // #endregion
+      return null;
+    }
     const data = await res.json();
-    return parseDraw(data);
+    const draw = parseDraw(data);
+    // #region agent log
+    fetch('http://127.0.0.1:7243/ingest/0493409d-9f66-4ebc-8b03-f6f6058ca129',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'lotteryApi.js:fetchLatestDraw',message:'API latest draw',data:{apiDate:data?.date,parsedDate:draw?.date ?? null},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
+    // #endregion
+    return draw;
   } catch (e) {
     console.warn('[LotteryAPI] fetchLatestDraw:', e?.message || e);
     return null;

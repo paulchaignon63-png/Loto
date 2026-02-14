@@ -18,6 +18,15 @@ document.addEventListener('DOMContentLoaded', async () => {
   console.log('Initialisation de l\'application...');
   try {
     await storage.ensureDrawsLoaded();
+    // #region agent log
+    const draws = storage.getHistory();
+    const parseDate = (d) => new Date(d.split('/').reverse().join('-'));
+    const lastFromCache = draws.length ? draws.slice().sort((a, b) => parseDate(a.date) - parseDate(b.date)).pop()?.date : null;
+    fetch('http://127.0.0.1:7243/ingest/0493409d-9f66-4ebc-8b03-f6f6058ca129',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'main.js:DOMContentLoaded',message:'Dernier tirage affiché (cache)',data:{lastDateFromCache:lastFromCache,drawsCount:draws.length},timestamp:Date.now(),hypothesisId:'H1'})}).catch(()=>{});
+    fetchLatestDraw().then(apiDraw => {
+      fetch('http://127.0.0.1:7243/ingest/0493409d-9f66-4ebc-8b03-f6f6058ca129',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'main.js:DOMContentLoaded',message:'Comparaison API vs cache',data:{lastDateFromCache:lastFromCache,apiLatestDate:apiDraw?.date ?? null},timestamp:Date.now(),hypothesisId:'H2'})}).catch(()=>{});
+    });
+    // #endregion
     initTabs();
     initDarkMode();
     initAuth();
@@ -29,6 +38,50 @@ document.addEventListener('DOMContentLoaded', async () => {
     renderAllStats();
     renderNextDrawNotification();
     console.log('Application initialisée avec succès');
+    // Synchroniser le dernier tirage (Edge Function) puis rafraîchir l’affichage
+    const baseUrl = SUPABASE_URL || import.meta.env.VITE_SUPABASE_URL || '';
+    const setSyncStatus = (text) => { const el = document.getElementById('syncStatus'); if (el) el.textContent = text; };
+    if (baseUrl && supabase) {
+      setSyncStatus('Mise à jour des tirages…');
+      fetch('http://127.0.0.1:7243/ingest/0493409d-9f66-4ebc-8b03-f6f6058ca129',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'main.js:syncLatestDraw',message:'Sync Edge Function appelée',data:{url:`${baseUrl}/functions/v1/fetch-latest-draw`},timestamp:Date.now(),hypothesisId:'sync',runId:'post-fix'})}).catch(()=>{});
+      fetch(`${baseUrl}/functions/v1/fetch-latest-draw`, {
+        method: 'POST',
+        headers: { Authorization: `Bearer ${SUPABASE_ANON_KEY}` }
+      })
+        .then((res) => res.json().then((body) => ({ status: res.status, body })).catch(() => ({ status: res.status, body: null })))
+        .then(({ status, body }) => {
+          fetch('http://127.0.0.1:7243/ingest/0493409d-9f66-4ebc-8b03-f6f6058ca129',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'main.js:syncLatestDraw',message:'Réponse Edge Function',data:{status,ok:body?.ok,date:body?.date,error:body?.error},timestamp:Date.now(),hypothesisId:'sync',runId:'post-fix'})}).catch(()=>{});
+          if (body?.ok) {
+            setSyncStatus(`Synchro OK. Dernier tirage reçu : ${body.date}${body.date === '10/02/2026' ? ' (l’API n’a pas encore publié un tirage plus récent.)' : ''}`);
+            storage.invalidateDrawsCache();
+            return storage.ensureDrawsLoaded();
+          }
+          if (status !== 200) setSyncStatus(`Synchro : erreur ${status}. ${body?.error || ''}`);
+          else if (body?.error) setSyncStatus(`Synchro : ${body.error}`);
+        })
+        .then((freshDraws) => {
+          if (freshDraws) {
+            const parseDate = (d) => new Date(d.split('/').reverse().join('-'));
+            const last = freshDraws.length ? freshDraws.slice().sort((a, b) => parseDate(a.date) - parseDate(b.date)).pop()?.date : null;
+            fetch('http://127.0.0.1:7243/ingest/0493409d-9f66-4ebc-8b03-f6f6058ca129',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'main.js:syncLatestDraw',message:'Après rechargement',data:{drawsCount:freshDraws.length,lastDate:last},timestamp:Date.now(),hypothesisId:'sync',runId:'post-fix'})}).catch(()=>{});
+          }
+          updateDataInfo();
+          renderAllStats();
+          renderNextDrawNotification();
+          const calendarTab = document.getElementById('calendar-tab');
+          if (calendarTab?.classList.contains('active')) renderCalendar();
+        })
+        .catch((err) => {
+          const msg = err?.message || String(err);
+          setSyncStatus(msg.includes('fetch') ? 'Synchro : échec (réseau ou CORS). Rechargez ou réessayez plus tard.' : `Synchro : échec — ${msg}`);
+          fetch('http://127.0.0.1:7243/ingest/0493409d-9f66-4ebc-8b03-f6f6058ca129',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({location:'main.js:syncLatestDraw',message:'Sync erreur',data:{err: msg},timestamp:Date.now(),hypothesisId:'sync',runId:'post-fix'})}).catch(()=>{});
+          updateDataInfo();
+          renderAllStats();
+          renderNextDrawNotification();
+        });
+    } else {
+      setSyncStatus('');
+    }
   } catch (error) {
     console.error('Erreur lors de l\'initialisation:', error);
   }

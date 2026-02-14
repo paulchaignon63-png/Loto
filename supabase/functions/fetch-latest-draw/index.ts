@@ -1,7 +1,21 @@
 import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
 
 const TAG = 'eu_euromillions';
-const BASE_URL = Deno.env.get('LOTTERY_API_URL') || 'https://api.lotteryresultsapi.com';
+// Utiliser l’API de production : alpha-api.lotteryresultsapi.com ne résout plus (DNS).
+const BASE_URL = 'https://api.lotteryresultsapi.com';
+
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Authorization, Content-Type, x-cron-secret',
+};
+
+function jsonResponse(body: object, status: number) {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { 'Content-Type': 'application/json', ...corsHeaders },
+  });
+}
 
 function parseDraw(apiDraw: { date: string; numbers: Array<{ special: boolean; value: number }> } | null) {
   if (!apiDraw?.date || !Array.isArray(apiDraw.numbers)) return null;
@@ -14,33 +28,37 @@ function parseDraw(apiDraw: { date: string; numbers: Array<{ special: boolean; v
 }
 
 Deno.serve(async (req) => {
+  if (req.method === 'OPTIONS') {
+    return new Response(null, { status: 204, headers: corsHeaders });
+  }
+
+  // CRON_SECRET optionnel : si défini ET fourni dans le header, on le vérifie (appel cron).
   const cronSecret = Deno.env.get('CRON_SECRET');
   if (cronSecret) {
     const provided = req.headers.get('x-cron-secret');
-    if (provided !== cronSecret) {
-      return new Response(JSON.stringify({ error: 'Unauthorized' }), { status: 401 });
+    if (provided && provided !== cronSecret) {
+      return jsonResponse({ error: 'Unauthorized' }, 401);
     }
   }
 
   const apiKey = Deno.env.get('LOTTERY_API_KEY');
   if (!apiKey) {
-    return new Response(JSON.stringify({ error: 'LOTTERY_API_KEY not configured' }), { status: 500 });
+    return jsonResponse({ error: 'LOTTERY_API_KEY not configured' }, 500);
   }
 
   try {
-    const res = await fetch(`${BASE_URL}/lottery/${TAG}/draw/latest/numbers`, {
-      headers: { 'X-Api-Token': apiKey },
+    // API v1.1.0 : /lottery/{tag}/draw/latest (réponse { draw: { date, numbers } })
+    const res = await fetch(`${BASE_URL}/lottery/${TAG}/draw/latest`, {
+      headers: { 'X-API-Token': apiKey },
     });
     if (!res.ok) {
-      return new Response(
-        JSON.stringify({ error: `Lottery API error: ${res.status}` }),
-        { status: 502 }
-      );
+      return jsonResponse({ error: `Lottery API error: ${res.status}` }, 502);
     }
     const data = await res.json();
-    const draw = parseDraw(data);
+    const apiDraw = data?.draw ?? data;
+    const draw = parseDraw(apiDraw);
     if (!draw) {
-      return new Response(JSON.stringify({ error: 'Invalid API response' }), { status: 502 });
+      return jsonResponse({ error: 'Invalid API response' }, 502);
     }
 
     const supabase = createClient(
@@ -54,16 +72,11 @@ Deno.serve(async (req) => {
     );
 
     if (error) {
-      return new Response(JSON.stringify({ error: error.message }), { status: 500 });
+      return jsonResponse({ error: error.message }, 500);
     }
 
-    return new Response(JSON.stringify({ ok: true, date: draw.date }), {
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return jsonResponse({ ok: true, date: draw.date }, 200);
   } catch (e) {
-    return new Response(
-      JSON.stringify({ error: (e as Error).message }),
-      { status: 500 }
-    );
+    return jsonResponse({ error: (e as Error).message }, 500);
   }
 });
