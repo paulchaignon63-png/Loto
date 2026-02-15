@@ -1,70 +1,43 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 56 32" width="56" height="32" aria-hidden="true">
-  <rect x="0" y="0" width="56" height="32" rx="4" fill="#1e3a5f"/>
-  <line x1="24" y1="0" x2="24" y2="32" stroke="#334155" stroke-width="0.5" opacity="0.7"/>
-  <g stroke="#2d3748" stroke-width="0.4" fill="#ffffff">
-    <rect x="2" y="2" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="6" y="2" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="10" y="2" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="14" y="2" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="18" y="2" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="2" y="4.8" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="6" y="4.8" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="10" y="4.8" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="14" y="4.8" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="18" y="4.8" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="2" y="7.6" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="6" y="7.6" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="10" y="7.6" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="14" y="7.6" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="18" y="7.6" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="2" y="10.4" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="6" y="10.4" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="10" y="10.4" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="14" y="10.4" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="18" y="10.4" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="2" y="13.2" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="6" y="13.2" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="10" y="13.2" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="14" y="13.2" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="18" y="13.2" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="2" y="16" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="6" y="16" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="10" y="16" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="14" y="16" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="18" y="16" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="2" y="18.8" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="6" y="18.8" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="10" y="18.8" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="14" y="18.8" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="18" y="18.8" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="2" y="21.6" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="6" y="21.6" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="10" y="21.6" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="14" y="21.6" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="18" y="21.6" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="2" y="24.4" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="6" y="24.4" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="10" y="24.4" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="14" y="24.4" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="18" y="24.4" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="2" y="27.2" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="6" y="27.2" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="10" y="27.2" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="14" y="27.2" width="3.6" height="2.6" rx="0.2"/>
-    <rect x="18" y="27.2" width="3.6" height="2.6" rx="0.2"/>
-  </g>
-  <g fill="none" stroke="#f6e05e" stroke-width="0.5">
-    <circle cx="28" cy="10" r="1.8"/>
-    <circle cx="32" cy="10" r="1.8"/>
-    <circle cx="36" cy="10" r="1.8"/>
-    <circle cx="40" cy="10" r="1.8"/>
-    <circle cx="44" cy="10" r="1.8"/>
-    <circle cx="48" cy="10" r="1.8"/>
-    <circle cx="28" cy="22" r="1.8"/>
-    <circle cx="32" cy="22" r="1.8"/>
-    <circle cx="36" cy="22" r="1.8"/>
-    <circle cx="40" cy="22" r="1.8"/>
-    <circle cx="44" cy="22" r="1.8"/>
-    <circle cx="48" cy="22" r="1.8"/>
-  </g>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 140 48" width="140" height="48" aria-hidden="true">
+  <defs>
+    <!-- Boule rouge (reflet sphérique) -->
+    <radialGradient id="ballRed" cx="35%" cy="30%" r="55%">
+      <stop offset="0%" stop-color="#fff" stop-opacity="0.5"/>
+      <stop offset="25%" stop-color="#feb2b2"/>
+      <stop offset="70%" stop-color="#e53e3e"/>
+      <stop offset="100%" stop-color="#c53030"/>
+    </radialGradient>
+    <!-- Boule bleue -->
+    <radialGradient id="ballBlue" cx="35%" cy="30%" r="55%">
+      <stop offset="0%" stop-color="#fff" stop-opacity="0.45"/>
+      <stop offset="25%" stop-color="#90cdf4"/>
+      <stop offset="70%" stop-color="#3182ce"/>
+      <stop offset="100%" stop-color="#2b6cb0"/>
+    </radialGradient>
+    <!-- Boule jaune -->
+    <radialGradient id="ballYellow" cx="35%" cy="30%" r="55%">
+      <stop offset="0%" stop-color="#fff" stop-opacity="0.6"/>
+      <stop offset="25%" stop-color="#faf089"/>
+      <stop offset="70%" stop-color="#d69e2e"/>
+      <stop offset="100%" stop-color="#b7791f"/>
+    </radialGradient>
+    <!-- Ombre sous les boules -->
+    <linearGradient id="shadow" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#000" stop-opacity="0.15"/>
+      <stop offset="100%" stop-color="#000" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+  <!-- Ombres -->
+  <ellipse cx="28" cy="42" rx="14" ry="4" fill="url(#shadow)"/>
+  <ellipse cx="70" cy="42" rx="14" ry="4" fill="url(#shadow)"/>
+  <ellipse cx="112" cy="42" rx="14" ry="4" fill="url(#shadow)"/>
+  <!-- Boule rouge -->
+  <circle cx="28" cy="26" r="18" fill="url(#ballRed)" stroke="#c53030" stroke-width="0.6"/>
+  <text x="28" y="31" text-anchor="middle" font-family="system-ui, sans-serif" font-size="18" font-weight="bold" fill="#fff">7</text>
+  <!-- Boule bleue -->
+  <circle cx="70" cy="26" r="18" fill="url(#ballBlue)" stroke="#2b6cb0" stroke-width="0.6"/>
+  <text x="70" y="31" text-anchor="middle" font-family="system-ui, sans-serif" font-size="18" font-weight="bold" fill="#fff">12</text>
+  <!-- Boule jaune -->
+  <circle cx="112" cy="26" r="18" fill="url(#ballYellow)" stroke="#b7791f" stroke-width="0.6"/>
+  <text x="112" y="31" text-anchor="middle" font-family="system-ui, sans-serif" font-size="18" font-weight="bold" fill="#2d3748">5</text>
 </svg>
